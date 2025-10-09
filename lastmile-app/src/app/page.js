@@ -1,70 +1,27 @@
 "use client";
+import { useState } from "react";
+import { getApi } from "../services/api";
 
-import Image from "next/image";
-import styles from "./page.module.css";
-import Link from "next/link";
-import { checkClientAuth, AUTH_CONFIG } from "../utils/auth";
-import { useState, useEffect } from "react";
+export default function Page() {
+  const [warehouses, setWarehouses] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-export default function Home() {
-  const [authStatus, setAuthStatus] = useState({ isAuth: false, token: "" });
-
-  useEffect(() => {
-    const isAuth = checkClientAuth();
-    if (isAuth) {
-      const cookies = document.cookie.split("; ").reduce((acc, cookie) => {
-        const [key, value] = cookie.split("=");
-        acc[key] = value;
-        return acc;
-      }, {});
-      setAuthStatus({
-        isAuth: true,
-        token: cookies[AUTH_CONFIG.COOKIE_NAME] || "",
-      });
+  const loadWarehouses = async () => {
+    setLoading(true);
+    try {
+      const data = await getApi("/warehouses");
+      setWarehouses(data);
+    } catch (error) {
+      console.error("Error loading warehouses:", error);
+    } finally {
+      setLoading(false);
     }
-  }, []);
-
-  const handleTestClick = () => {
-    window.location.reload();
-  };
-
-  const handleNavigation = () => {
-    window.location.href = window.location.href;
   };
 
   return (
-    <div className={styles.page}>
-      <h1>🚛 Last Mile Dashboard (Zone v2)</h1>
-      <p style={{ fontSize: "18px", margin: "20px 0" }}>Welcome to the Last Mile application zone!</p>
-
-      <div
-        style={{
-          backgroundColor: authStatus.isAuth ? "#dcfce7" : "#fef2f2",
-          border: "2px solid " + (authStatus.isAuth ? "#16a34a" : "#ef4444"),
-          borderRadius: "8px",
-          padding: "15px",
-          margin: "20px 0",
-          maxWidth: "600px",
-        }}
-      >
-        <h3 style={{ color: authStatus.isAuth ? "#166534" : "#991b1b", margin: "0 0 10px 0" }}>
-          🔐 Authentication Status
-        </h3>
-        <p style={{ color: authStatus.isAuth ? "#166534" : "#991b1b", margin: "5px 0" }}>
-          <strong>Status:</strong> {authStatus.isAuth ? "✅ Authenticated" : "❌ Not Authenticated"}
-        </p>
-        {authStatus.isAuth && (
-          <p style={{ color: "#166534", margin: "5px 0", wordBreak: "break-all" }}>
-            <strong>Token:</strong> {authStatus.token}
-          </p>
-        )}
-        <p
-          style={{ color: authStatus.isAuth ? "#166534" : "#991b1b", margin: "5px 0", fontSize: "14px" }}
-        >
-          This cookie is shared across all zones in the multi-zone application.
-        </p>
-      </div>
-
+    <div style={{ padding: "20px" }}>
+      <h1>Last Mile Delivery Zone</h1>
+      <p>This is the lastmile zone running on localhost:3001 but accessible through localhost:3000/v2</p>
       <div style={{ marginTop: "40px" }}>
         <a
           href="/"
@@ -92,8 +49,37 @@ export default function Home() {
           Go to Fulfillment App →
         </a>
       </div>
+      <div style={{ marginTop: "20px" }}>
+        <button
+          onClick={loadWarehouses}
+          disabled={loading}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#0070f3",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: loading ? "wait" : "pointer",
+          }}
+        >
+          {loading ? "Loading..." : "Load Warehouses (API Demo)"}
+        </button>
+      </div>
 
-  
+      {warehouses.length > 0 && (
+        <div style={{ marginTop: "20px" }}>
+          <h3>Warehouse Data (via Host API):</h3>
+          <ul>
+            {warehouses.map((warehouse) => (
+              <li key={warehouse.id} style={{ marginBottom: "10px" }}>
+                <strong>{warehouse.name}</strong> - {warehouse.location}
+                <br />
+                <small>Capacity: {warehouse.capacity} packages</small>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

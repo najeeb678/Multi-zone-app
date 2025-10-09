@@ -21,6 +21,14 @@ const LoginPage = () => {
       setLoggedIn(true);
       setCookieValue(cookies[AUTH_CONFIG.COOKIE_NAME] || "");
       console.log("User is already authenticated");
+
+      // Check if there's a redirect URL and redirect automatically
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectUrl = urlParams.get("redirect");
+      if (redirectUrl) {
+        console.log(`Redirecting authenticated user to: ${redirectUrl}`);
+        window.location.href = redirectUrl;
+      }
     }
   }, []);
 
@@ -65,6 +73,16 @@ const LoginPage = () => {
 
     setLoggedIn(true);
     setCookieValue(sessionToken);
+
+    // Check if there's a redirect URL and redirect after login
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get("redirect");
+    if (redirectUrl) {
+      console.log(`Redirecting after login to: ${redirectUrl}`);
+      setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, 1000); // Small delay to show success message
+    }
   };
 
   const handleLogout = () => {
@@ -121,6 +139,9 @@ const LoginPage = () => {
             </a>
             <a href="/v3" style={styles.navLink}>
               🚚 Fulfillment App (Zone v3)
+            </a>
+            <a href="/v3/publicPage" style={styles.navLink}>
+              🚚 Public Page
             </a>
           </div>
         </>
