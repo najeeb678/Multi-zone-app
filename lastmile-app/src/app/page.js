@@ -1,16 +1,18 @@
 "use client";
 import { useState } from "react";
-import { getApi } from "../services/api";
+import Api from "@/services/api";
 
 export default function Page() {
   const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const loadWarehouses = async () => {
+    console.log("Loading warehouses...");
     setLoading(true);
     try {
-      const data = await getApi("/warehouses");
-      setWarehouses(data);
+      const response = await Api.getApi("/warehouse/get/list");
+      console.log("Warehouses loaded:", response?.data?.data?.data);
+      setWarehouses(response?.data?.data?.data);
     } catch (error) {
       console.error("Error loading warehouses:", error);
     } finally {
