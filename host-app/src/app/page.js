@@ -1,10 +1,12 @@
 "use client";
-import React from "react";
-import { AUTH_CONFIG } from "../utils/auth";
+import React, { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
+import axios from "axios";
 
 const Home = () => {
   const { data: session, status } = useSession();
+  const [apiResult, setApiResult] = useState(null);
+  const [testing, setTesting] = useState(false);
 
   // Show loading state
   if (status === "loading") {
@@ -35,21 +37,33 @@ const Home = () => {
     // Sign out from NextAuth
     await signOut({ redirect: false });
 
-    // Clear shared cookie for multi-zone access
-    const currentDomain = window.location.hostname;
-    const isLocalhost = currentDomain === "localhost" || currentDomain === "127.0.0.1";
-
-    if (isLocalhost) {
-      document.cookie = `${AUTH_CONFIG.COOKIE_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-    } else {
-      const rootDomain = currentDomain.split(".").slice(-2).join(".");
-      document.cookie = `${AUTH_CONFIG.COOKIE_NAME}=; path=/; domain=.${rootDomain}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-    }
-
-    console.log("✅ Authentication cookie cleared — user logged out from all zones");
+    console.log("✅ User logged out");
 
     // Redirect to login page
     window.location.href = "/login";
+  };
+
+  const testApiProxy = async () => {
+    setTesting(true);
+    setApiResult(null);
+
+    try {
+      console.log("🧪 Testing API proxy with NextAuth...");
+
+      // Test our API proxy with a simple endpoint
+      const response = await axios.get("/api/v2/test");
+
+      console.log("✅ API proxy test successful:", response.data);
+      setApiResult({ success: true, data: response.data });
+    } catch (error) {
+      console.error("❌ API proxy test failed:", error);
+      setApiResult({
+        success: false,
+        error: error.response?.data || error.message,
+      });
+    } finally {
+      setTesting(false);
+    }
   };
 
   return (
@@ -74,6 +88,40 @@ const Home = () => {
             <p style={{ color: "#ccc", margin: "0.25rem 0" }}>Tenant: {session.user?.tenant}</p>
           </div>
         )}
+
+        {/* API Proxy Test */}
+        <div style={{ margin: "1rem 0", textAlign: "center" }}>
+          <button
+            onClick={testApiProxy}
+            disabled={testing}
+            style={{
+              ...styles.button,
+              backgroundColor: testing ? "#666" : "#28a745",
+              cursor: testing ? "not-allowed" : "pointer",
+            }}
+          >
+            {testing ? "Testing..." : "🧪 Test API Proxy"}
+          </button>
+
+          {apiResult && (
+            <div
+              style={{
+                marginTop: "1rem",
+                padding: "1rem",
+                backgroundColor: apiResult.success ? "#1e4d2c" : "#4d1e1e",
+                borderRadius: "5px",
+                border: `1px solid ${apiResult.success ? "#28a745" : "#dc3545"}`,
+              }}
+            >
+              <h5 style={{ color: apiResult.success ? "#28a745" : "#dc3545", margin: "0 0 0.5rem 0" }}>
+                {apiResult.success ? "✅ API Test Success" : "❌ API Test Failed"}
+              </h5>
+              <pre style={{ color: "#ccc", fontSize: "0.8rem", textAlign: "left", margin: 0 }}>
+                {JSON.stringify(apiResult.success ? apiResult.data : apiResult.error, null, 2)}
+              </pre>
+            </div>
+          )}
+        </div>
 
         <p style={styles.cookieText}></p>
         <div style={styles.navigationLinks}>

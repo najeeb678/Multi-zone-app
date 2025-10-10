@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAuthenticated, getAuthCookie } from "../../../../utils/auth";
+import { getServerSession } from "next-auth/next";
+import { getToken } from "next-auth/jwt";
+import { authOptions } from "../auth/[...nextauth]/route.js";
+import axios from "axios";
 
 // Proxy all API calls to backend - equivalent to your Express server middleware
 export async function GET(request) {
@@ -28,17 +31,29 @@ async function handleApiProxy(request) {
   console.log(`🔄 API Proxy: ${request.method} ${apiPath}`);
 
   // Backend URL from environment
-  const backendUrl = process.env.APP_BASE_URL || "https://devapi.techship.me";
+  const backendUrl = process.env.BACKEND_URL || process.env.APP_BASE_URL || "https://devapi.techship.me";
 
-  // Check authentication (handled by middleware, but double-check)
-  if (!isAuthenticated(request)) {
+  // Get NextAuth session to check authentication and get backend token
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
     return NextResponse.json(
       { STATUS: "FAILED", MESSAGE: "authentication required to access the resource" },
       { status: 401 }
     );
   }
 
-  const authCookie = getAuthCookie(request);
+  // Get the backend token from the JWT token
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+
+  if (!token || !token.backendToken) {
+    return NextResponse.json(
+      { STATUS: "FAILED", MESSAGE: "backend token not found in session" },
+      { status: 401 }
+    );
+  }
+
+  const backendToken = token.backendToken;
 
   try {
     // Prepare request body for non-GET requests
@@ -51,43 +66,57 @@ async function handleApiProxy(request) {
       }
     }
 
-    // Prepare headers for backend request
-    const headers = {
-      Authorization: `Bearer ${authCookie.value}`,
-      "Content-Type": "application/json",
-      "x-host": request.headers.get("host") || "",
-      "x-device-id": request.headers.get("x-device-id") || "",
-    };
+    // Create axios instance with backend configuration
+    const apiClient = axios.create({
+      baseURL: backendUrl,
+      headers: {
+        Authorization: `Bearer ${backendToken}`,
+        "Content-Type": "application/json",
+        "x-host": request.headers.get("host") || "",
+        "x-device-id": request.headers.get("x-device-id") || "",
+      },
+    });
 
-    // Make the backend request
-    const backendResponse = await fetch(`${backendUrl}${apiPath}`, {
-      method: request.method,
-      headers: headers,
-      body: requestBody ? JSON.stringify(requestBody) : undefined,
+    // Make the backend request using axios
+    const backendResponse = await apiClient({
+      method: request.method.toLowerCase(),
+      url: apiPath,
+      data: requestBody,
+      validateStatus: () => true, // Don't throw on any status code
     });
 
     // For demo purposes, return mock data if backend is not available
-    if (!process.env.APP_BASE_URL) {
+    if (!process.env.BACKEND_URL && !process.env.APP_BASE_URL) {
       return getMockResponse(apiPath, request.method);
     }
 
-    // Forward the backend response
-    const responseData = await backendResponse.json();
     console.log(`📡 Backend response: ${apiPath} -> ${backendResponse.status}`);
 
-    return NextResponse.json(responseData, { status: backendResponse.status });
+    return NextResponse.json(backendResponse.data, { status: backendResponse.status });
   } catch (error) {
-    console.error("Backend proxy error:", error);
+    console.error("Backend proxy error:", error.message);
 
     // Return mock data for demo
-    if (!process.env.APP_BASE_URL) {
+    if (!process.env.BACKEND_URL && !process.env.APP_BASE_URL) {
       return getMockResponse(apiPath, request.method);
     }
 
-    return NextResponse.json(
-      { STATUS: "FAILED", MESSAGE: "Backend service unavailable" },
-      { status: 500 }
-    );
+    // Handle axios errors
+    if (error.response) {
+      // Backend responded with error status
+      return NextResponse.json(error.response.data || { STATUS: "FAILED", MESSAGE: "Backend error" }, {
+        status: error.response.status,
+      });
+    } else if (error.request) {
+      // Network error
+      return NextResponse.json(
+        { STATUS: "FAILED", MESSAGE: "Backend service unavailable" },
+        { status: 503 }
+      );
+    } else {
+      // Other error
+      return NextResponse.json({ STATUS: "FAILED", MESSAGE: "Internal server error" }, { status: 500 });
+    }
   }
 }
 

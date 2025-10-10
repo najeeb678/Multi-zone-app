@@ -3,27 +3,9 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import Link from "next/link";
-import { checkClientAuth, AUTH_CONFIG } from "../utils/auth";
 import { useState, useEffect } from "react";
 
 export default function Home() {
-  const [authStatus, setAuthStatus] = useState({ isAuth: false, token: "" });
-
-  useEffect(() => {
-    const isAuth = checkClientAuth();
-    if (isAuth) {
-      const cookies = document.cookie.split("; ").reduce((acc, cookie) => {
-        const [key, value] = cookie.split("=");
-        acc[key] = value;
-        return acc;
-      }, {});
-      setAuthStatus({
-        isAuth: true,
-        token: cookies[AUTH_CONFIG.COOKIE_NAME] || "",
-      });
-    }
-  }, []);
-
   const handleTestClick = () => {
     window.location.reload();
   };
@@ -37,32 +19,29 @@ export default function Home() {
       <h1>📦 Fulfillment Dashboard (Zone v3)</h1>
       <p style={{ fontSize: "18px", margin: "20px 0" }}>Welcome to the Fulfillment application zone!</p>
 
-      {/* Authentication Status */}
+      {/* Simple Zone Information */}
       <div
         style={{
-          backgroundColor: authStatus.isAuth ? "#dcfce7" : "#fef2f2",
-          border: "2px solid " + (authStatus.isAuth ? "#16a34a" : "#ef4444"),
+          backgroundColor: "#f0f9ff",
+          border: "2px solid #0284c7",
           borderRadius: "8px",
           padding: "15px",
           margin: "20px 0",
           maxWidth: "600px",
         }}
       >
-        <h3 style={{ color: authStatus.isAuth ? "#166534" : "#991b1b", margin: "0 0 10px 0" }}>
-          🔐 Authentication Status
-        </h3>
-        <p style={{ color: authStatus.isAuth ? "#166534" : "#991b1b", margin: "5px 0" }}>
-          <strong>Status:</strong> {authStatus.isAuth ? "✅ Authenticated" : "❌ Not Authenticated"}
+        <h3 style={{ color: "#0c4a6e", margin: "0 0 10px 0" }}>� Fulfillment Zone Information</h3>
+        <p style={{ color: "#0c4a6e", margin: "5px 0" }}>
+          <strong>Zone:</strong> v3 - Fulfillment App
         </p>
-        {authStatus.isAuth && (
-          <p style={{ color: "#166534", margin: "5px 0", wordBreak: "break-all" }}>
-            <strong>Token:</strong> {authStatus.token}
-          </p>
-        )}
-        <p
-          style={{ color: authStatus.isAuth ? "#166534" : "#991b1b", margin: "5px 0", fontSize: "14px" }}
-        >
-          This cookie is shared across all zones in the multi-zone application.
+        <p style={{ color: "#0c4a6e", margin: "5px 0" }}>
+          <strong>Port:</strong> 3001 (when running independently)
+        </p>
+        <p style={{ color: "#0c4a6e", margin: "5px 0" }}>
+          <strong>Purpose:</strong> Order fulfillment and warehouse management
+        </p>
+        <p style={{ color: "#0c4a6e", margin: "5px 0", fontSize: "14px" }}>
+          Authentication is handled by the host app at the proxy level.
         </p>
       </div>
 
@@ -94,7 +73,6 @@ export default function Home() {
           Go to Lastmile App →
         </a>
       </div>
-
     </div>
   );
 }
