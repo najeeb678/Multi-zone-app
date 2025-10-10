@@ -4,7 +4,7 @@ import { getToken } from "next-auth/jwt";
 import { authOptions } from "../auth/[...nextauth]/route.js";
 import axios from "axios";
 
-// Proxy all API calls to backend - equivalent to your Express server middleware
+// Proxy all API calls to backend 
 export async function GET(request) {
   return handleApiProxy(request);
 }

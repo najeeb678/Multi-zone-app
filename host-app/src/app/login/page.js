@@ -4,7 +4,10 @@ import { signIn, getProviders, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({
+    email: "test@example.com",
+    password: "12345",
+  });
   const [error, setError] = useState(null);
   const [providers, setProviders] = useState(null);
   const { data: session, status } = useSession();

@@ -5,8 +5,7 @@ import axios from "axios";
 
 const Home = () => {
   const { data: session, status } = useSession();
-  const [apiResult, setApiResult] = useState(null);
-  const [testing, setTesting] = useState(false);
+
 
   // Show loading state
   if (status === "loading") {
@@ -43,28 +42,7 @@ const Home = () => {
     window.location.href = "/login";
   };
 
-  const testApiProxy = async () => {
-    setTesting(true);
-    setApiResult(null);
 
-    try {
-      console.log("🧪 Testing API proxy with NextAuth...");
-
-      // Test our API proxy with a simple endpoint
-      const response = await axios.get("/api/v2/test");
-
-      console.log("✅ API proxy test successful:", response.data);
-      setApiResult({ success: true, data: response.data });
-    } catch (error) {
-      console.error("❌ API proxy test failed:", error);
-      setApiResult({
-        success: false,
-        error: error.response?.data || error.message,
-      });
-    } finally {
-      setTesting(false);
-    }
-  };
 
   return (
     <div style={styles.container}>
@@ -89,38 +67,8 @@ const Home = () => {
           </div>
         )}
 
-        {/* API Proxy Test */}
-        <div style={{ margin: "1rem 0", textAlign: "center" }}>
-          <button
-            onClick={testApiProxy}
-            disabled={testing}
-            style={{
-              ...styles.button,
-              backgroundColor: testing ? "#666" : "#28a745",
-              cursor: testing ? "not-allowed" : "pointer",
-            }}
-          >
-            {testing ? "Testing..." : "🧪 Test API Proxy"}
-          </button>
 
-          {apiResult && (
-            <div
-              style={{
-                marginTop: "1rem",
-                padding: "1rem",
-                backgroundColor: apiResult.success ? "#1e4d2c" : "#4d1e1e",
-                borderRadius: "5px",
-                border: `1px solid ${apiResult.success ? "#28a745" : "#dc3545"}`,
-              }}
-            >
-              <h5 style={{ color: apiResult.success ? "#28a745" : "#dc3545", margin: "0 0 0.5rem 0" }}>
-                {apiResult.success ? "✅ API Test Success" : "❌ API Test Failed"}
-              </h5>
-              <pre style={{ color: "#ccc", fontSize: "0.8rem", textAlign: "left", margin: 0 }}>
-                {JSON.stringify(apiResult.success ? apiResult.data : apiResult.error, null, 2)}
-              </pre>
-            </div>
-          )}
+
         </div>
 
         <p style={styles.cookieText}></p>
@@ -137,7 +85,7 @@ const Home = () => {
           Logout
         </button>
       </div>
-    </div>
+  
   );
 };
 

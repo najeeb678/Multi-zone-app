@@ -11,7 +11,10 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("Authorize called - delegating to backend", credentials?.email);
+        console.log("🔐 Authorize called with:", {
+          email: credentials?.email,
+          hasPassword: !!credentials?.password,
+        });
 
         try {
           // For development mode, keep the mock login
@@ -20,8 +23,8 @@ export const authOptions = {
             credentials?.email === "test@example.com" &&
             credentials?.password === "12345"
           ) {
-            console.log("Using mock login in development mode");
-            return {
+            console.log("✅ Using mock login in development mode");
+            const user = {
               id: "user_001",
               name: "Test User",
               email: "test@example.com",
@@ -30,6 +33,8 @@ export const authOptions = {
               backendToken: "mock_jwt_token_for_development",
               config: { theme: "dark" },
             };
+            console.log("🎯 Returning user object:", user);
+            return user;
           }
 
           // Call your backend API for real login
@@ -46,7 +51,7 @@ export const authOptions = {
             return null;
           }
 
-          console.log("Backend authentication successful for", user.email);
+          console.log("✅ Backend authentication successful for", user.email);
 
           // Return user with the backend token attached
           return {
@@ -54,7 +59,7 @@ export const authOptions = {
             backendToken: token, // Store securely in JWT
           };
         } catch (err) {
-          console.error("Backend authentication error:", err.message);
+          console.error("❌ Backend authentication error:", err.message);
           return null;
         }
       },
@@ -69,17 +74,21 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
+      console.log("🔄 JWT Callback - token:", !!token, "user:", !!user);
       if (user) {
+        console.log("🔄 JWT Callback - storing user data in token");
         // Store user data and backend token in JWT
         token.id = user.id;
         token.role = user.role;
         token.tenant = user.tenant;
         token.config = user.config;
         token.backendToken = user.backendToken; // Securely store backend JWT
+        console.log("🔄 JWT Callback - token updated with user data");
       }
       return token;
     },
     async session({ session, token }) {
+      console.log("🔄 Session Callback - creating session for:", token?.id);
       // Add user data to session (accessible on client)
       session.user.id = token.id;
       session.user.role = token.role;
@@ -88,7 +97,7 @@ export const authOptions = {
 
       // Deliberately NOT exposing backendToken to client
       // backendToken stays in the JWT (server-side only)
-
+      console.log("🔄 Session Callback - session created:", session.user.email);
       return session;
     },
   },
