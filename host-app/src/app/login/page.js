@@ -1,57 +1,58 @@
 "use client";
-import { AUTH_CONFIG, generateSessionToken } from "@/utils/auth";
 import React, { useState, useEffect } from "react";
+import { signIn, getProviders } from "next-auth/react";
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({ email: "abc@gmail.com", password: "12345" });
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState(null);
+  const [providers, setProviders] = useState(null);
+
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        const res = await getProviders();
+        console.log("Available providers:", res);
+        setProviders(res);
+      } catch (error) {
+        console.error("Error fetching providers:", error);
+        setError("Failed to load authentication providers");
+      }
+    };
+    fetchProviders();
+  }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data:", formData);
+    setError(null);
 
-    // Generate a secure session token using our auth utility
-    const sessionToken = generateSessionToken();
+    try {
+      console.log("Starting login process with:", formData.email);
 
-    // Get the current domain for cookie sharing
-    const currentDomain = window.location.hostname;
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      });
 
-    // Set secure cookie that will be shared across all zones
-    const isLocalhost = currentDomain === "localhost" || currentDomain === "127.0.0.1";
+      console.log("Login result:", result);
 
-    if (isLocalhost) {
-      // For localhost development - cookie without domain (will work for same origin)
-      document.cookie = `${AUTH_CONFIG.COOKIE_NAME}=${sessionToken}; path=/; SameSite=Lax; ${
-        window.location.protocol === "https:" ? "Secure" : ""
-      }`;
-    } else {
-      // For production - use domain to share across subdomains
-      const rootDomain = currentDomain.split(".").slice(-2).join("."); // Get root domain
-      // document.cookie = `${AUTH_CONFIG.COOKIE_NAME}=${sessionToken}; path=/; domain=.${rootDomain}; SameSite=None; Secure`;
-      document.cookie = `${AUTH_CONFIG.COOKIE_NAME}=${sessionToken}; path=/; domain=${currentDomain}; SameSite=None; Secure`;
-    }
-
-    console.log(`✅ Authentication cookie set successfully!`);
-    console.log(`Token: ${sessionToken}`);
-    console.log(
-      `Domain: ${
-        isLocalhost ? "localhost (no domain)" : "." + currentDomain.split(".").slice(-2).join(".")
-      }`
-    );
-    console.log(`This cookie will be accessible across all zones`);
-
-    // Check if there's a redirect URL and redirect after login
-    const urlParams = new URLSearchParams(window.location.search);
-    const redirectUrl = urlParams.get("redirect") || "/";
-    if (redirectUrl) {
-      console.log(`Redirecting after login to: ${redirectUrl}`);
-      setTimeout(() => {
-        window.location.href = redirectUrl;
-      }, 1000); // Small delay to show success message
+      if (result?.error) {
+        console.error("Login error:", result.error);
+        setError(result.error);
+      } else if (result?.ok) {
+        console.log("Login successful, redirecting...");
+        window.location.href = "/";
+      } else {
+        console.error("Unexpected result:", result);
+        setError("Login failed - unexpected response");
+      }
+    } catch (error) {
+      console.error("Login exception:", error);
+      setError(`Login failed: ${error.message}`);
     }
   };
 
@@ -59,10 +60,17 @@ const LoginPage = () => {
     <div style={styles.container}>
       <form onSubmit={handleSubmit} style={styles.form}>
         <h2 style={styles.title}>Login</h2>
+
+        {/* Debug info */}
+        <div style={{ marginBottom: "1rem", fontSize: "0.8rem", color: "#ccc" }}>
+          <div>Providers loaded: {providers ? "Yes" : "No"}</div>
+          <div>NextAuth available: {typeof signIn !== "undefined" ? "Yes" : "No"}</div>
+        </div>
+
         <input
           type="email"
           name="email"
-          placeholder="Email"
+          placeholder="Email (try: test@example.com)"
           value={formData.email}
           onChange={handleChange}
           style={styles.input}
@@ -71,7 +79,7 @@ const LoginPage = () => {
         <input
           type="password"
           name="password"
-          placeholder="Password"
+          placeholder="Password (try: 12345)"
           value={formData.password}
           onChange={handleChange}
           style={styles.input}
@@ -80,6 +88,7 @@ const LoginPage = () => {
         <button type="submit" style={styles.button}>
           Login
         </button>
+        {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
       </form>
       <div style={styles.navigationLinks}>
         <h3 style={styles.navHeading}>Navigate to:</h3>

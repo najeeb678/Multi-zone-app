@@ -1,25 +1,31 @@
 "use client";
 import React from "react";
 import { AUTH_CONFIG } from "../utils/auth";
+import { useSession, signOut } from "next-auth/react";
 
 const Home = () => {
-  const handleLogout = () => {
-    // Remove cookie properly for both localhost and production
+  const { data: session } = useSession();
+
+  const handleLogout = async () => {
+    console.log("🚪 Logging out...");
+
+    // Sign out from NextAuth
+    await signOut({ redirect: false });
+
+    // Clear shared cookie for multi-zone access
     const currentDomain = window.location.hostname;
     const isLocalhost = currentDomain === "localhost" || currentDomain === "127.0.0.1";
 
     if (isLocalhost) {
-      // For localhost development
       document.cookie = `${AUTH_CONFIG.COOKIE_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     } else {
-      // For production - clear cookie with domain
       const rootDomain = currentDomain.split(".").slice(-2).join(".");
       document.cookie = `${AUTH_CONFIG.COOKIE_NAME}=; path=/; domain=.${rootDomain}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     }
 
-    console.log("🚪 Authentication cookie cleared - user logged out from all zones");
+    console.log("✅ Authentication cookie cleared — user logged out from all zones");
 
-    // Redirect to login page after logout
+    // Redirect to login page
     window.location.href = "/login";
   };
 
