@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
-    email: "test@example.com",
-    password: "12345",
+    username: "Admin",
+    password: "@dmin213",
   });
   const [error, setError] = useState(null);
   const [providers, setProviders] = useState(null);
@@ -60,11 +60,11 @@ const LoginPage = () => {
     setError(null);
 
     try {
-      console.log("Starting login process with:", formData.email);
+      console.log("Starting login process with:", formData.username);
 
       const result = await signIn("credentials", {
         redirect: false,
-        email: formData.email,
+        username: formData.username,
         password: formData.password,
       });
 
@@ -99,10 +99,10 @@ const LoginPage = () => {
         </div>
 
         <input
-          type="email"
-          name="email"
+          type="text"
+          name="username"
           placeholder="Email (try: test@example.com)"
-          value={formData.email}
+          value={formData.username}
           onChange={handleChange}
           style={styles.input}
           required
