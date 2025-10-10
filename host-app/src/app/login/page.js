@@ -1,11 +1,22 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { signIn, getProviders } from "next-auth/react";
+import { signIn, getProviders, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState(null);
   const [providers, setProviders] = useState(null);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (status === "authenticated") {
+      console.log("User already authenticated, redirecting to home...");
+      router.push("/");
+    }
+  }, [status, router]);
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -20,6 +31,22 @@ const LoginPage = () => {
     };
     fetchProviders();
   }, []);
+
+  // Show loading while checking session
+  if (status === "loading") {
+    return (
+      <div style={styles.container}>
+        <div style={styles.form}>
+          <h2 style={styles.title}>Loading...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render login form if already authenticated
+  if (status === "authenticated") {
+    return null;
+  }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -45,7 +72,8 @@ const LoginPage = () => {
         setError(result.error);
       } else if (result?.ok) {
         console.log("Login successful, redirecting...");
-        window.location.href = "/";
+        // Use Next.js router for better navigation
+        router.push("/");
       } else {
         console.error("Unexpected result:", result);
         setError("Login failed - unexpected response");

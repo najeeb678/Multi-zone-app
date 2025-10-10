@@ -4,7 +4,30 @@ import { AUTH_CONFIG } from "../utils/auth";
 import { useSession, signOut } from "next-auth/react";
 
 const Home = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+  // Show loading state
+  if (status === "loading") {
+    return (
+      <div style={styles.container}>
+        <div style={styles.loggedInBox}>
+          <h2 style={styles.successText}>Loading...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to login if not authenticated (middleware should handle this, but just in case)
+  if (status === "unauthenticated") {
+    return (
+      <div style={styles.container}>
+        <div style={styles.loggedInBox}>
+          <h2 style={{ color: "#ff6b6b" }}>Not authenticated</h2>
+          <p style={{ color: "#ccc" }}>Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleLogout = async () => {
     console.log("🚪 Logging out...");
@@ -33,6 +56,25 @@ const Home = () => {
     <div style={styles.container}>
       <div style={styles.loggedInBox}>
         <h2 style={styles.successText}>✅ Logged in successfully!</h2>
+
+        {/* Session Information */}
+        {session && (
+          <div
+            style={{
+              margin: "1rem 0",
+              padding: "1rem",
+              backgroundColor: "#2c2c2c",
+              borderRadius: "5px",
+            }}
+          >
+            <h4 style={{ color: "#fff", marginBottom: "0.5rem" }}>Session Info:</h4>
+            <p style={{ color: "#ccc", margin: "0.25rem 0" }}>Email: {session.user?.email}</p>
+            <p style={{ color: "#ccc", margin: "0.25rem 0" }}>Name: {session.user?.name}</p>
+            <p style={{ color: "#ccc", margin: "0.25rem 0" }}>Role: {session.user?.role}</p>
+            <p style={{ color: "#ccc", margin: "0.25rem 0" }}>Tenant: {session.user?.tenant}</p>
+          </div>
+        )}
+
         <p style={styles.cookieText}></p>
         <div style={styles.navigationLinks}>
           <h3 style={styles.navHeading}>Navigate to:</h3>
