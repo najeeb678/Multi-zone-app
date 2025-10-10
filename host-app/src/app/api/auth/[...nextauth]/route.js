@@ -20,42 +20,89 @@ export const authOptions = {
           const loginData = new URLSearchParams({
             username: credentials?.username,
             password: credentials?.password,
+            grant_type: "password",
           });
 
-          const backendUrl = `${process.env.BACKEND_URL}/v2/api/oauth/token`;
+          // Use the same URL pattern as the working code: backendURL + oauthLogin
+          // Based on the working logs, it should be BACKEND_URL + /api/oauth/token
+          const backendUrl = `${process.env.APP_BASE_URL}/oauth/token`;
           console.log(`🔄 Calling backend: ${backendUrl}`);
 
-          const res = await axios.post(backendUrl, loginData, {
+          // Create proper authorization header exactly like the working code
+          const dbUser = process.env.DB_USER || "abc:12345";
+          const credentials_auth = "Basic " + Buffer.from(dbUser).toString("base64");
+
+          console.log("🔑 Using DB_USER:", process.env.DB_USER);
+          console.log("🔑 Auth header:", credentials_auth);
+
+          const res = await axios.post(backendUrl, loginData.toString(), {
             headers: {
+              Authorization: credentials_auth,
               "Content-Type": "application/x-www-form-urlencoded",
               "x-host": process.env.DEV_HOST || "basit.techship.me",
-              "x-device-id": "nextauth-web-client",
             },
           });
 
-          console.log("🎯 Backend response:", res.data);
+          console.log("🎯 Backend response data:", res.data);
+          console.log("🍪 Backend response cookies:", res.headers["set-cookie"]);
 
-          // Backend should return success status or token
-          if (!res.data || res.data.STATUS === "FAILED") {
-            console.error("❌ Authentication failed:", res.data?.MESSAGE || "Invalid credentials");
+          // The working code returns a response like: { STATUS: "SUCCESS", USER: {...} }
+          // But your earlier test showed a direct response, so handle both cases
+          let responseData = res.data;
+          let userData = responseData;
+
+          // Check if it's wrapped in a response object
+          if (responseData.STATUS === "SUCCESS" && responseData.USER) {
+            userData = responseData.USER;
+            console.log("📦 Found wrapped response with USER object");
+          } else if (responseData.STATUS === "FAILED") {
+            console.error("❌ Authentication failed:", responseData.MESSAGE || "Invalid credentials");
             return null;
+          } else {
+            console.log("📦 Direct response format");
+          }
+
+          // Extract session cookie from backend response
+          const setCookieHeader = res.headers["set-cookie"];
+          let backendToken = null;
+
+          if (setCookieHeader) {
+            // Look for connect.sid cookie which seems to be the session token
+            const sessionCookie = setCookieHeader.find((cookie) => cookie.startsWith("connect.sid="));
+            if (sessionCookie) {
+              // Extract just the cookie value part
+              backendToken = sessionCookie.split(";")[0]; // Gets "connect.sid=value"
+              console.log("🎫 Found session cookie as token:", !!backendToken);
+            }
+          }
+
+          // Fallback: check for any token in response data or USER object
+          if (!backendToken) {
+            backendToken =
+              userData.accessToken ||
+              userData.token ||
+              userData.access_token ||
+              userData.authToken ||
+              userData.jwt ||
+              userData.bearerToken;
+            console.log("🎫 Found token in data:", !!backendToken);
           }
 
           // Construct user data from backend response
-          const userData = {
-            id: res.data.userId || "user_" + Date.now(),
-            name: res.data.name || credentials?.username,
+          const userInfo = {
+            id: userData.userId || userData.id || "user_" + Date.now(),
+            name: userData.name || credentials?.username,
             username: credentials?.username,
-            role: res.data.type || "user",
+            role: userData.type || "user",
             tenant: "production",
-            permissions: res.data.permission,
-            warehouses: res.data.warehouses,
-            userName: res.data.userName,
-            backendToken: res.data.accessToken || res.data.token, // backend-issued JWT
+            permissions: userData.permission || userData.permissions,
+            warehouses: userData.warehouses,
+            userName: userData.userName,
+            backendToken: backendToken, // backend-issued session cookie or JWT
           };
 
           console.log("✅ Backend authentication successful for:", userData.username);
-          return userData;
+          return userInfo;
         } catch (err) {
           console.error("❌ Backend authentication error:", err.message);
           return null;

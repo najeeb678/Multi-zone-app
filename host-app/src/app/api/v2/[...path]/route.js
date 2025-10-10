@@ -35,8 +35,14 @@ async function handleApiProxy(request) {
 
   // Get NextAuth session to check authentication and get backend token
   const session = await getServerSession(authOptions);
+  console.log("🔐 Session check:", {
+    hasSession: !!session,
+    hasUser: !!session?.user,
+    userEmail: session?.user?.username,
+  });
 
   if (!session || !session.user) {
+    console.log("❌ No session or user found");
     return NextResponse.json(
       { STATUS: "FAILED", MESSAGE: "authentication required to access the resource" },
       { status: 401 }
@@ -45,6 +51,11 @@ async function handleApiProxy(request) {
 
   // Get the backend token from the JWT token
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+  console.log("🎫 Token check:", {
+    hasToken: !!token,
+    hasBackendToken: !!token?.backendToken,
+    tokenKeys: token ? Object.keys(token) : [],
+  });
 
   if (!token || !token.backendToken) {
     return NextResponse.json(
@@ -67,14 +78,28 @@ async function handleApiProxy(request) {
     }
 
     // Create axios instance with backend configuration
+    const headers = {
+      "Content-Type": "application/json",
+      "x-host": request.headers.get("host") || "",
+      "x-device-id": request.headers.get("x-device-id") || "",
+    };
+
+    // Add authentication - check if backendToken is a session cookie or bearer token
+    if (backendToken) {
+      if (backendToken.startsWith("connect.sid=")) {
+        // It's a session cookie, add it to Cookie header
+        headers.Cookie = backendToken;
+        console.log("🍪 Using session cookie authentication");
+      } else {
+        // It's a bearer token, add it to Authorization header
+        headers.Authorization = `Bearer ${backendToken}`;
+        console.log("🔑 Using bearer token authentication");
+      }
+    }
+
     const apiClient = axios.create({
       baseURL: backendUrl,
-      headers: {
-        Authorization: `Bearer ${backendToken}`,
-        "Content-Type": "application/json",
-        "x-host": request.headers.get("host") || "",
-        "x-device-id": request.headers.get("x-device-id") || "",
-      },
+      headers: headers,
     });
 
     // Make the backend request using axios
