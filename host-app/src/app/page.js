@@ -1,11 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useSession, signOut } from "next-auth/react";
-import axios from "axios";
 
 const Home = () => {
   const { data: session, status } = useSession();
-
 
   // Show loading state
   if (status === "loading") {
@@ -42,8 +40,6 @@ const Home = () => {
     window.location.href = "/login";
   };
 
-
-
   return (
     <div style={styles.container}>
       <div style={styles.loggedInBox}>
@@ -66,26 +62,22 @@ const Home = () => {
             <p style={{ color: "#ccc", margin: "0.25rem 0" }}>Tenant: {session.user?.tenant}</p>
           </div>
         )}
-
-
-
-        </div>
-
-        <p style={styles.cookieText}></p>
-        <div style={styles.navigationLinks}>
-          <h3 style={styles.navHeading}>Navigate to:</h3>
-          <a href="/v2" style={styles.navLink}>
-            📦 Lastmile App (Zone v2)
-          </a>
-          <a href="/v3" style={styles.navLink}>
-            🚚 Fulfillment App (Zone v3)
-          </a>
-        </div>
-        <button onClick={handleLogout} style={styles.logoutButton}>
-          Logout
-        </button>
       </div>
-  
+
+      <p style={styles.cookieText}></p>
+      <div style={styles.navigationLinks}>
+        <h3 style={styles.navHeading}>Navigate to:</h3>
+        <a href="/v2" style={styles.navLink}>
+          📦 Lastmile App (Zone v2)
+        </a>
+        <a href="/v3" style={styles.navLink}>
+          🚚 Fulfillment App (Zone v3)
+        </a>
+      </div>
+      <button onClick={handleLogout} style={styles.logoutButton}>
+        Logout
+      </button>
+    </div>
   );
 };
 
