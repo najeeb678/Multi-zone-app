@@ -1,7 +1,7 @@
 // API service for zones - all calls go through host app
 class ApiService {
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_HOST_URL || "http://localhost:3000";
+    this.baseURL = process.env.BACKEND_URL || "http://localhost:3000";
   }
 
   // Main API method - equivalent to your postApi
