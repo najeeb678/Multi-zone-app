@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
 import Api from "@/services/api";
+import { useState, useEffect } from "react";
+// import { orders as ordersEndpoint } from "@/constants/endpoints";
 
 export default function Page() {
   const [orders, setOrders] = useState([]);
@@ -16,7 +17,7 @@ export default function Page() {
   }, []);
 
   const loadOrders = async (page = 1, size = 20) => {
-    console.log("🚀 Fetching orders from backend...");
+    // console.log("🚀 Fetching orders from backend...");
     setLoading(true);
     try {
       const queryParams = new URLSearchParams({
@@ -26,7 +27,8 @@ export default function Page() {
       });
 
       // Use your proxy (will go through middleware for auth)
-      const response = await Api.getApi(`/LM/order/get/for/admin?${queryParams}`);
+      const response = await Api.getApi(`v2/api/LM/order/get/for/admin?${queryParams}`);
+      // const response = await Api.getApi(`${ordersEndpoint}${queryParams}`);
 
       console.log("✅ Orders API Response:", response?.data);
 
