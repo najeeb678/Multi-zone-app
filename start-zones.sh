@@ -14,27 +14,27 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 # Start each zone in background
-echo "📦 Starting Fulfillment App (Zone v3) on port 3001..."
-cd /home/tp/Desktop/multiZone-app/fulfillment-app && npm run dev -- -p 3001 &
+echo "📦 Starting Fulfillment App (Zone v3) on port 5803..."
+cd /home/tp/Desktop/multiZone-app/fulfillment-app && npm run dev -- -p 5803 &
 
-echo "🚛 Starting Lastmile App (Zone v2) on port 3002..."
-cd /home/tp/Desktop/multiZone-app/lastmile-app && npm run dev -- -p 3002 &
+echo "🚛 Starting Lastmile App (Zone v2) on port 5802..."
+cd /home/tp/Desktop/multiZone-app/lastmile-app && npm run dev -- -p 5802 &
 
-echo "🏠 Starting Host App (Main Zone) on port 3000..."
-cd /home/tp/Desktop/multiZone-app/host-app && npm run dev -- -p 3000 &
+echo "🏠 Starting Host App (Main Zone) on port 5801..."
+cd /home/tp/Desktop/multiZone-app/host-app && npm run dev -- -p 5801 &
 
 echo ""
 echo "✅ All zones are starting up..."
 echo ""
 echo "🌐 Access your multi-zone application at:"
-echo "   - Main Zone (Host):        http://localhost:3000"
-echo "   - Lastmile Zone (v2):      http://localhost:3000/v2"
-echo "   - Fulfillment Zone (v3):   http://localhost:3000/v3"
+echo "   - Main Zone (Host):        http://localhost:5801"
+echo "   - Lastmile Zone (v2):      http://localhost:5802/v2"
+echo "   - Fulfillment Zone (v3):   http://localhost:5803/v3"
 echo ""
 echo "💡 Direct zone access (for development):"
-echo "   - Host App:                http://localhost:3000"
-echo "   - Fulfillment App:         http://localhost:3001"
-echo "   - Lastmile App:            http://localhost:3002"
+echo "   - Host App:                http://localhost:5801"
+echo "   - Fulfillment App:         http://localhost:5803"
+echo "   - Lastmile App:            http://localhost:5802"
 echo ""
 echo "Press Ctrl+C to stop all zones"
 

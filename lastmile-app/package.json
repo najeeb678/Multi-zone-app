@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "dev": "next dev --port=5802",
+    "production": "next build && npm start --port=5802",
+    "start": "next start",
+    "lint": "next lint",
+    "build": "next build"
   },
   "dependencies": {
     "axios": "^1.12.2",

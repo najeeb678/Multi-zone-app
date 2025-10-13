@@ -4,15 +4,14 @@ import "react-toastify/dist/ReactToastify.css";
 
 const gltAPI = () => {
   const instance = axios.create({
-    baseURL: "http://localhost:3000", // Point to host app where proxy is located
-    withCredentials: true, // include cookies for session-based auth
+    baseURL: "", // Point to host app where proxy is located
+    withCredentials: true,
   });
 
   // 🔹 Request Interceptor
   instance.interceptors.request.use(
     (config) => {
       config.headers["Content-Type"] = "application/json";
-      // config.headers["x-device-id"] = AppUtils.getDeviceId();
 
       // console.groupCollapsed(
       //   `%c🚀 API REQUEST → ${config.method?.toUpperCase()} ${config.url}`,
@@ -35,26 +34,26 @@ const gltAPI = () => {
   // 🔹 Response Interceptor
   instance.interceptors.response.use(
     (response) => {
-      console.groupCollapsed(
-        `%c✅ API RESPONSE ← ${response.config.method?.toUpperCase()} ${response.config.url}`,
-        "color: #28a745; font-weight: bold;"
-      );
-      console.log("📊 Status:", response.status);
-      console.log("📨 Data:", response.data);
-      console.log("🕓 Timestamp:", new Date().toLocaleTimeString());
-      console.groupEnd();
+      // console.groupCollapsed(
+      //   `%c✅ API RESPONSE ← ${response.config.method?.toUpperCase()} ${response.config.url}`,
+      //   "color: #28a745; font-weight: bold;"
+      // );
+      // console.log("📊 Status:", response.status);
+      // console.log("📨 Data:", response.data);
+      // console.log("🕓 Timestamp:", new Date().toLocaleTimeString());
+      // console.groupEnd();
 
       return response;
     },
     (error) => {
-      console.groupCollapsed(
-        `%c🔥 API ERROR ← ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
-        "color: #dc3545; font-weight: bold;"
-      );
-      console.log("❌ Error Message:", error.message);
-      console.log("📊 Status:", error.response?.status || "No response");
-      console.log("📨 Data:", error.response?.data || "(none)");
-      console.groupEnd();
+      // console.groupCollapsed(
+      //   `%c🔥 API ERROR ← ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
+      //   "color: #dc3545; font-weight: bold;"
+      // );
+      // console.log("❌ Error Message:", error.message);
+      // console.log("📊 Status:", error.response?.status || "No response");
+      // console.log("📨 Data:", error.response?.data || "(none)");
+      // console.groupEnd();
 
       if (error?.response?.status === 401) {
         toast.error("Session expired. Redirecting to login...");

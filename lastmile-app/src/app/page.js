@@ -27,7 +27,8 @@ export default function Page() {
       });
 
       // Use your proxy (will go through middleware for auth)
-      const response = await Api.getApi(`v2/api/LM/order/get/for/admin?${queryParams}`);
+      // const response = await Api.getApi(`v2/api/MAN/client/get/as/list`);
+      const response = await Api.postApi(`v2/api/LM/order/get/for/admin?${queryParams}`);
       // const response = await Api.getApi(`${ordersEndpoint}${queryParams}`);
 
       console.log("✅ Orders API Response:", response?.data);
@@ -84,6 +85,7 @@ export default function Page() {
                 border: "1px solid #ddd",
                 borderRadius: "8px",
                 backgroundColor: "#f9f9f9",
+                color: "#333",
               }}
             >
               <div style={{ fontWeight: "bold", marginBottom: "6px" }}>
