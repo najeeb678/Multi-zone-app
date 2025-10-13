@@ -6,7 +6,7 @@ import styles from "./page.module.css";
 export default function Page() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [loggingOut, setLoggingOut] = useState(false);
   useEffect(() => {
     loadClients();
   }, []);
@@ -27,7 +27,17 @@ export default function Page() {
       setLoading(false);
     }
   };
-
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await Api.postApi("v2/api/auth/revoke"); // Calls the host API to revoke & clear session
+      // No redirect needed — middleware will automatically detect cleared session
+    } catch (err) {
+      console.error("❌ Logout failed:", err);
+    } finally {
+      setLoggingOut(false);
+    }
+  };
   return (
     <div className={styles.page}>
       <div className={styles.header}>
@@ -84,6 +94,13 @@ export default function Page() {
         >
           {loading ? "Loading..." : "🔄 Refresh Clients"}
         </button>
+        <button
+          onClick={handleLogout}
+          disabled={loggingOut}
+          style={{ ...buttonStyle, backgroundColor: "#ef4444", marginLeft: "10px" }}
+        >
+          {loggingOut ? "Logging out..." : "🚪 Logout"}
+        </button>
       </div>
       {clients.length > 0 ? (
         <div className={styles.clients}>
@@ -114,3 +131,13 @@ export default function Page() {
     </div>
   );
 }
+const buttonStyle = {
+  padding: "10px 20px",
+  backgroundColor: "#0070f3",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  marginBottom: "20px",
+  marginRight: "10px",
+};
