@@ -84,8 +84,8 @@ export default function Page() {
                 padding: "15px",
                 border: "1px solid #ddd",
                 borderRadius: "8px",
-                backgroundColor: "#f9f9f9",
-                color: "#333",
+                backgroundColor: "#333",
+                color: "#afa3a3ff",
               }}
             >
               <div style={{ fontWeight: "bold", marginBottom: "6px" }}>
