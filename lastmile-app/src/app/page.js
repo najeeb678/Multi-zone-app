@@ -16,7 +16,7 @@ export default function Page() {
     loadOrders();
   }, []);
 
-  const loadOrders = async (page = 1, size = 20) => {
+  const loadOrders = async (page = 1, size = 10) => {
     // console.log("🚀 Fetching orders from backend...");
     setLoading(true);
     try {
