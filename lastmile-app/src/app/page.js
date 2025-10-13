@@ -1,7 +1,7 @@
 "use client";
 import Api from "@/services/api";
 import { useState, useEffect } from "react";
-// import { orders as ordersEndpoint } from "@/constants/endpoints";
+import styles from "./page.module.css";
 
 export default function Page() {
   const [orders, setOrders] = useState([]);
@@ -27,8 +27,8 @@ export default function Page() {
       });
 
       // Use your proxy (will go through middleware for auth)
-      // const response = await Api.getApi(`v2/api/MAN/client/get/as/list`);
-      const response = await Api.postApi(`v2/api/LM/order/get/for/admin?${queryParams}`);
+      const response = await Api.getApi(`v2/api/MAN/client/get/as/list`);
+      // const response = await Api.postApi(`v2/api/LM/order/get/for/admin?${queryParams}`);
       // const response = await Api.getApi(`${ordersEndpoint}${queryParams}`);
 
       console.log("✅ Orders API Response:", response?.data);
@@ -47,11 +47,13 @@ export default function Page() {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <div className={styles.page}>
+      <div className={styles.header}>
       <h1 style={{ color: "#333" }}>🚛 Last Mile Orders</h1>
       <p style={{ color: "#777", marginBottom: "20px" }}>
         Testing real API connection through host middleware.
-      </p>
+      </p></div>
+      <div className={styles.buttons}>
 
       <button
         onClick={() => (window.location.href = "/")}
@@ -100,15 +102,9 @@ export default function Page() {
       >
         {loading ? "Loading..." : "🔄 Refresh Orders"}
       </button>
-
+</div>
       {orders.length > 0 ? (
-        <div
-          style={{
-            display: "grid",
-            gap: "15px",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-          }}
-        >
+      <div className={styles.orders}>
           {orders.map((order) => (
             <div
               key={order.id}
