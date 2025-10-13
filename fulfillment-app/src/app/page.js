@@ -30,7 +30,7 @@ export default function Page() {
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
-      await Api.postApi("v2/api/auth/revoke"); // Calls the host API to revoke & clear session
+      await Api.postApi("v2/api/auth/logout"); // Calls the host API to revoke & clear session
       // No redirect needed — middleware will automatically detect cleared session
     } catch (err) {
       console.error("❌ Logout failed:", err);
@@ -94,13 +94,13 @@ export default function Page() {
         >
           {loading ? "Loading..." : "🔄 Refresh Clients"}
         </button>
-        <button
+        {/* <button
           onClick={handleLogout}
           disabled={loggingOut}
           style={{ ...buttonStyle, backgroundColor: "#ef4444", marginLeft: "10px" }}
         >
           {loggingOut ? "Logging out..." : "🚪 Logout"}
-        </button>
+        </button> */}
       </div>
       {clients.length > 0 ? (
         <div className={styles.clients}>
