@@ -27,8 +27,8 @@ export default function Page() {
       });
 
       // Use your proxy (will go through middleware for auth)
-      const response = await Api.getApi(`v2/api/MAN/client/get/as/list`);
-      // const response = await Api.postApi(`v2/api/LM/order/get/for/admin?${queryParams}`);
+      // const response = await Api.getApi(`v2/api/MAN/client/get/as/list`);
+      const response = await Api.postApi(`v2/api/LM/order/get/for/admin?${queryParams}`);
       // const response = await Api.getApi(`${ordersEndpoint}${queryParams}`);
 
       console.log("✅ Orders API Response:", response?.data);
@@ -49,7 +49,7 @@ export default function Page() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-      <h1 style={{ color: "#333" }}>🚛 Last Mile Orders</h1>
+      <h1 style={{ color: "#c4b7b7ff" }}>🚛 Last Mile Orders</h1>
       <p style={{ color: "#777", marginBottom: "20px" }}>
         Testing real API connection through host middleware.
       </p></div>

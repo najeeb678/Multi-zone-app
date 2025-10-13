@@ -31,7 +31,7 @@ export default function Page() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <h1>📦 Fulfillment Dashboard (Zone v3)</h1>
+        <h1 style={{ color: "#c4b7b7ff" }}>📦 Fulfillment Dashboard (Zone v3)</h1>
         <p style={{ color: "#777", marginBottom: "20px" }}>
           Testing real API connection through host middleware.
         </p>
@@ -54,7 +54,7 @@ export default function Page() {
           Host App
         </button>
         <button
-          onClick={() => (window.location.href = "/v3")}
+          onClick={() => (window.location.href = "/v2")}
           disabled={loading}
           style={{
             padding: "10px 20px",
@@ -67,7 +67,7 @@ export default function Page() {
             marginRight: "10px",
           }}
         >
-          Fulfillment App
+          Last-Mile App
         </button>
         <button
           onClick={loadClients}
