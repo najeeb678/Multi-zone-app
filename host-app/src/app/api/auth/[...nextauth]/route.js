@@ -23,8 +23,6 @@ export const authOptions = {
             grant_type: "password",
           });
 
-          // Use the same URL pattern as the working code: backendURL + oauthLogin
-          // Based on the working logs, it should be BACKEND_URL + /api/oauth/token
           const backendUrl = `${process.env.APP_BASE_URL}/oauth/token`;
           console.log(`🔄 Calling backend: ${backendUrl}`);
 

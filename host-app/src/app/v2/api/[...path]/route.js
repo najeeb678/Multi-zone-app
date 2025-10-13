@@ -10,7 +10,7 @@ export async function handler(req, { params }) {
     // 🔹 Resolve dynamic route parameters
     const resolvedParams = await params;
 
-    // 🔹 Get authentication token from NextAuth
+    // 🔹 Get authentication token from NextAuth,The client never sees this token.
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
     if (!token) {

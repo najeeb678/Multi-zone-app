@@ -54,6 +54,38 @@ export default function Page() {
       </p>
 
       <button
+        onClick={() => (window.location.href = "/")}
+        disabled={loading}
+        style={{
+          padding: "10px 20px",
+          backgroundColor: "#0070f3",
+          color: "white",
+          border: "none",
+          borderRadius: "6px",
+          cursor: loading ? "wait" : "pointer",
+          marginBottom: "20px",
+          marginRight: "10px",
+        }}
+      >
+        {"Host App"}
+      </button>
+      <button
+        onClick={() => (window.location.href = "/v3")}
+        disabled={loading}
+        style={{
+          padding: "10px 20px",
+          backgroundColor: "#0070f3",
+          color: "white",
+          border: "none",
+          borderRadius: "6px",
+          cursor: loading ? "wait" : "pointer",
+          marginBottom: "20px",
+          marginRight: "10px",
+        }}
+      >
+        {"Fulfillment App"}
+      </button>
+      <button
         onClick={() => loadOrders()}
         disabled={loading}
         style={{
