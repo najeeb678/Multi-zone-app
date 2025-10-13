@@ -120,22 +120,30 @@ export const authOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
+      // console.log("token before:", token);
       if (user) {
+        // console.log("user from authorize:", user);
         token.id = user.id;
         token.role = user.role;
         token.tenant = user.tenant;
         token.config = user.config;
         token.backendToken = user.backendToken; // store backend token securely
       }
+      // console.log("token after:", token);
       return token;
     },
 
     async session({ session, token }) {
+      // console.log("session before:", session);
+      // console.log("token:", token);
       session.user.id = token.id;
-      session.user.role = token.role;
-      session.user.tenant = token.tenant;
-      session.user.config = token.config;
-      // Don't expose backendToken to the client
+      session.user.name = token.name || "";
+      session.user.role = token.role || "user";
+      session.user.tenant = token.tenant || "";
+      session.user.config = token.config || {};
+      session.user.email = token.email || null;
+      session.user.image = token.image || null;
+      console.log("session after:", session);
       return session;
     },
   },

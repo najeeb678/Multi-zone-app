@@ -11,7 +11,12 @@ export default function Page() {
     size: 20,
     total: 0,
   });
-
+  const [session, setSession] = useState(null);
+  useEffect(() => {
+    fetch("/api/session")
+      .then((res) => res.json())
+      .then((data) => setSession(data));
+  }, []);
   useEffect(() => {
     loadOrders();
   }, []);
@@ -49,62 +54,99 @@ export default function Page() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-      <h1 style={{ color: "#c4b7b7ff" }}>🚛 Last Mile Orders</h1>
-      <p style={{ color: "#777", marginBottom: "20px" }}>
-        Testing real API connection through host middleware.
-      </p></div>
+        <h1 style={{ color: "#c4b7b7ff" }}>🚛 Last Mile Orders</h1>
+        <p style={{ color: "#777", marginBottom: "20px" }}>
+          Testing real API connection through host middleware.
+        </p>
+      </div>
       <div className={styles.buttons}>
+        <button
+          onClick={() => (window.location.href = "/")}
+          disabled={loading}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#0070f3",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: loading ? "wait" : "pointer",
+            marginBottom: "20px",
+            marginRight: "10px",
+          }}
+        >
+          {"Host App"}
+        </button>
+        <button
+          onClick={() => (window.location.href = "/v3")}
+          disabled={loading}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#0070f3",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: loading ? "wait" : "pointer",
+            marginBottom: "20px",
+            marginRight: "10px",
+          }}
+        >
+          {"Fulfillment App"}
+        </button>
+        <button
+          onClick={() => loadOrders()}
+          disabled={loading}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#0070f3",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: loading ? "wait" : "pointer",
+            marginBottom: "20px",
+          }}
+        >
+          {loading ? "Loading..." : "🔄 Refresh Orders"}
+        </button>
+      </div>
+      <div className={styles.sessionCard}>
+        <h2>User Info</h2>
+        {session?.user ? (
+          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+            <div>
+              <strong>ID:</strong> {session.user.id}
+            </div>
+            <div>
+              <strong>Name:</strong> {session.user.name || "—"}
+            </div>
+            <div>
+              <strong>Email:</strong> {session.user.email || "—"}
+            </div>
+            <div>
+              <strong>Role:</strong> {session.user.role}
+            </div>
+            <div>
+              <strong>Tenant:</strong> {session.user.tenant}
+            </div>
+            <div>
+              <strong>Config:</strong> {session.user.config ? JSON.stringify(session.user.config) : "—"}
+            </div>
+            {session.user.image && (
+              <div>
+                <img
+                  src={session.user.image}
+                  alt="User Avatar"
+                  style={{ width: "50px", borderRadius: "50%" }}
+                />
+              </div>
+            )}
+          </div>
+        ) : (
+          <p>Loading user info...</p>
+        )}
+      </div>
 
-      <button
-        onClick={() => (window.location.href = "/")}
-        disabled={loading}
-        style={{
-          padding: "10px 20px",
-          backgroundColor: "#0070f3",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          cursor: loading ? "wait" : "pointer",
-          marginBottom: "20px",
-          marginRight: "10px",
-        }}
-      >
-        {"Host App"}
-      </button>
-      <button
-        onClick={() => (window.location.href = "/v3")}
-        disabled={loading}
-        style={{
-          padding: "10px 20px",
-          backgroundColor: "#0070f3",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          cursor: loading ? "wait" : "pointer",
-          marginBottom: "20px",
-          marginRight: "10px",
-        }}
-      >
-        {"Fulfillment App"}
-      </button>
-      <button
-        onClick={() => loadOrders()}
-        disabled={loading}
-        style={{
-          padding: "10px 20px",
-          backgroundColor: "#0070f3",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          cursor: loading ? "wait" : "pointer",
-          marginBottom: "20px",
-        }}
-      >
-        {loading ? "Loading..." : "🔄 Refresh Orders"}
-      </button>
-</div>
       {orders.length > 0 ? (
-      <div className={styles.orders}>
+        <div className={styles.orders}>
           {orders.map((order) => (
             <div
               key={order.id}
