@@ -67,7 +67,7 @@ const LoginPage = () => {
         username: formData.username,
         password: formData.password,
       });
-      localStorage.setItem("Testing ", "Testing123");
+      // localStorage.setItem("Testing ", "Testing123");
       console.log("Login result:", result);
 
       if (result?.error) {
