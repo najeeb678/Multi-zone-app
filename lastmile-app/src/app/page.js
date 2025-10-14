@@ -10,7 +10,7 @@ export default async function Page() {
     const hostUrl = process.env.HOST_URL || "http://localhost:5801";
 
     // Server-to-server request to host, bypassing auth middleware
-    const res = await fetch(`${hostUrl}/v2/api/MAN/client/get/as/list`, {
+    const res = await fetch(`${hostUrl}/api/MAN/client/get/as/list`, {
       method: "GET",
       headers: {
         "x-internal-ssr": "true", // bypass auth
