@@ -5,26 +5,16 @@ const BACKEND_URL = process.env.APP_BASE_URL || "https://devapi.techship.me";
 
 export async function handler(req) {
   try {
-    console.log("➡️ API call received:", req.method);
-
-    // ✅ Get token from cookie/session
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    console.log("🔑 Token from cookie:", token);
-
-    // ✅ Get backend token either from header or session
-    const authHeader = req.headers.get("authorization");
-    let sessionToken = authHeader?.split(" ")[1];
-    if (!sessionToken && token?.backendToken) {
-      sessionToken = token.backendToken;
-    }
-
-    if (!sessionToken) {
-      console.log("❌ No session token found");
+    if (!token?.backendToken) {
+      // console.log("❌ No backend token found");
       return NextResponse.json(
         { STATUS: "FAILED", MESSAGE: "Authentication required" },
         { status: 401 }
       );
     }
+
+    const sessionToken = token.backendToken;
 
     // ✅ Construct backend URL
     const url = new URL(req.url);
@@ -32,37 +22,28 @@ export async function handler(req) {
     const finalUrl = `${BACKEND_URL}/${apiPath}${url.search}`;
     console.log("📍 Target backend URL:", finalUrl);
 
-    // ✅ Clone and forward important headers
+    // ✅ Forward headers safely
     const headers = new Headers();
-    req.headers.forEach((value, key) => {
-      const lowerKey = key.toLowerCase();
-      if (!["host", "connection", "upgrade"].includes(lowerKey)) {
-        headers.set(key, value);
-      }
-    });
-
-    headers.set("Content-Type", "application/x-www-form-urlencoded");
+    headers.set("Content-Type", "application/json");
     headers.set("Authorization", `Bearer ${sessionToken}`);
     headers.set("x-host", process.env.DEV_HOST || "basit.techship.me");
-  
 
-    if (req.headers.get("cookie")) {
-      headers.set("Cookie", req.headers.get("cookie"));
-    }
-
-    // ✅ Forward body for non-GET/HEAD
+    // ✅ Read body for non-GET requests
     const body = req.method !== "GET" && req.method !== "HEAD" ? await req.text() : undefined;
 
-    // ✅ Make the request
+    // ✅ Make backend request
     const response = await fetch(finalUrl, { method: req.method, headers, body });
-    console.log("✅ Backend response proxy :", response);
     console.log("✅ Backend response status:", response.status);
+    // console.log("✅ Backend response proxy:", response);
 
-    // ✅ Pass response through
+    // ✅ Read and return body safely
     const responseBody = await response.text();
+
     return new NextResponse(responseBody, {
       status: response.status,
-      headers: response.headers,
+      headers: {
+        "Content-Type": response.headers.get("content-type") || "application/json",
+      },
     });
   } catch (err) {
     console.error("❌ Proxy Error:", err);

@@ -11,10 +11,10 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("🔐 Authorize called with:", {
-          username: credentials?.username,
-          hasPassword: !!credentials?.password,
-        });
+        // console.log("🔐 Authorize called with:", {
+        //   username: credentials?.username,
+        //   hasPassword: !!credentials?.password,
+        // });
 
         try {
           const loginData = new URLSearchParams({
@@ -30,8 +30,8 @@ export const authOptions = {
           const dbUser = process.env.DB_USER || "abc:12345";
           const credentials_auth = "Basic " + Buffer.from(dbUser).toString("base64");
 
-          console.log("🔑 Using DB_USER:", process.env.DB_USER);
-          console.log("🔑 Auth header:", credentials_auth);
+          // console.log("🔑 Using DB_USER:", process.env.DB_USER);
+          // console.log("🔑 Auth header:", credentials_auth);
 
           const res = await axios.post(backendUrl, loginData.toString(), {
             headers: {
@@ -41,8 +41,8 @@ export const authOptions = {
             },
           });
 
-          console.log("🎯 Backend response data:", res.data);
-          console.log("🍪 Backend response cookies:", res.headers["set-cookie"]);
+          // console.log("🎯 Backend response data:", res.data);
+          // console.log("🍪 Backend response cookies:", res.headers["set-cookie"]);
 
           // The working code returns a response like: { STATUS: "SUCCESS", USER: {...} }
           // But your earlier test showed a direct response, so handle both cases
@@ -155,4 +155,3 @@ export const authOptions = {
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
-  
