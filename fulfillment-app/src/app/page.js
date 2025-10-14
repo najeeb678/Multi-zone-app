@@ -2,6 +2,7 @@
 import Api from "@/services/api";
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
+import { globalLogout } from "@/utils/auth";
 
 export default function Page() {
   const [clients, setClients] = useState([]);
@@ -27,17 +28,7 @@ export default function Page() {
       setLoading(false);
     }
   };
-  const handleLogout = async () => {
-    setLoggingOut(true);
-    try {
-      await Api.postApi("v2/api/auth/logout"); // Calls the host API to revoke & clear session
-      // No redirect needed — middleware will automatically detect cleared session
-    } catch (err) {
-      console.error("❌ Logout failed:", err);
-    } finally {
-      setLoggingOut(false);
-    }
-  };
+
   return (
     <div className={styles.page}>
       <div className={styles.header}>
@@ -94,13 +85,13 @@ export default function Page() {
         >
           {loading ? "Loading..." : "🔄 Refresh Clients"}
         </button>
-        {/* <button
-          onClick={handleLogout}
+        <button
+          onClick={globalLogout}
           disabled={loggingOut}
           style={{ ...buttonStyle, backgroundColor: "#ef4444", marginLeft: "10px" }}
         >
           {loggingOut ? "Logging out..." : "🚪 Logout"}
-        </button> */}
+        </button>
       </div>
       {clients.length > 0 ? (
         <div className={styles.clients}>

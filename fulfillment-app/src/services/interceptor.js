@@ -1,67 +1,49 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 const gltAPI = () => {
   const instance = axios.create({
-    baseURL: "", // Point to host app where proxy is located
+    baseURL: "", // proxy (host app)
     withCredentials: true,
   });
 
-  // 🔹 Request Interceptor
+  // Request interceptor
   instance.interceptors.request.use(
     (config) => {
       config.headers["Content-Type"] = "application/json";
-
-      // console.groupCollapsed(
-      //   `%c🚀 API REQUEST → ${config.method?.toUpperCase()} ${config.url}`,
-      //   "color: #007bff; font-weight: bold;"
-      // );
-      // console.log("Payload11:", config.data || "(none)");
-      // console.log("🧭 Base URL:", config.baseURL || "(default)");
-      // console.log("🔖 Full URL:", `${config.baseURL || ""}${config.url}`);
-      // console.log("🪪 Headers:", config.headers);
-      console.groupEnd();
-
       return config;
     },
-    (error) => {
-      console.error("❌ Request setup error:", error);
-      return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
   );
 
-  // 🔹 Response Interceptor
+  // Response interceptor
   instance.interceptors.response.use(
-    (response) => {
-      // console.groupCollapsed(
-      //   `%c✅ API RESPONSE ← ${response.config.method?.toUpperCase()} ${response.config.url}`,
-      //   "color: #28a745; font-weight: bold;"
-      // );
-      // console.log("📊 Status:", response.status);
-      // console.log("📨 Data:", response.data);
-      // console.log("🕓 Timestamp:", new Date().toLocaleTimeString());
-      // console.groupEnd();
+    (response) => response,
+    async (error) => {
+      const status = error?.response?.status;
 
-      return response;
-    },
-    (error) => {
-      // console.groupCollapsed(
-      //   `%c🔥 API ERROR ← ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
-      //   "color: #dc3545; font-weight: bold;"
-      // );
-      // console.log("❌ Error Message:", error.message);
-      // console.log("📊 Status:", error.response?.status || "No response");
-      // console.log("📨 Data:", error.response?.data || "(none)");
-      // console.groupEnd();
+      // 🔹 Unauthorized or Forbidden
+      if (status === 401 || status === 403) {
+        console.log("message11122");
+        const message =
+          status === 401
+            ? "Session expired. Redirecting to login..."
+            : error?.response?.data?.message || "Access denied.";
 
-      if (error?.response?.status === 401) {
-        toast.error("Session expired. Redirecting to login...");
+        if (typeof window !== "undefined") {
+          toast.error(message);
+        }
+
+        try {
+          await fetch("/api/auth/signout", { method: "POST" });
+        } catch (logoutErr) {
+          console.error("❌ Error during logout:", logoutErr);
+        }
+
+        // Redirect after short delay
         setTimeout(() => {
           window.location.href = "/login";
         }, 1500);
-      } else if (error?.response?.status === 503) {
-        toast.error("Service unavailable. Please try again later.");
       }
 
       return Promise.reject(error);
