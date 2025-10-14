@@ -48,8 +48,7 @@ export const authOptions = {
           // But your earlier test showed a direct response, so handle both cases
           let responseData = res.data;
           let userData = responseData;
-
-          // Check if it's wrapped in a response object
+          // 🧩 Handle both wrapped and direct formats
           if (responseData.STATUS === "SUCCESS" && responseData.USER) {
             userData = responseData.USER;
             console.log("📦 Found wrapped response with USER object");
@@ -60,32 +59,19 @@ export const authOptions = {
             console.log("📦 Direct response format");
           }
 
-          // Extract session cookie from backend response
-          const setCookieHeader = res.headers["set-cookie"];
-          let backendToken = null;
+          // 🧠 Extract token from data (no cookies needed)
+          const backendToken =
+            userData.accessToken ||
+            userData.token ||
+            userData.access_token ||
+            userData.authToken ||
+            userData.jwt ||
+            userData.bearerToken;
 
-          if (setCookieHeader) {
-            // Look for connect.sid cookie which seems to be the session token
-            const sessionCookie = setCookieHeader.find((cookie) => cookie.startsWith("connect.sid="));
-            if (sessionCookie) {
-              // Extract just the cookie value part
-              backendToken = sessionCookie.split(";")[0]; // Gets "connect.sid=value"
-              console.log("🎫 Found session cookie as token:", !!backendToken);
-            }
-          }
-
-          // Fallback: check for any token in response data or USER object
           if (!backendToken) {
-            backendToken =
-              userData.accessToken ||
-              userData.token ||
-              userData.access_token ||
-              userData.authToken ||
-              userData.jwt ||
-              userData.bearerToken;
-            console.log("🎫 Found token in data:", !!backendToken);
+            console.error("❌ No backend token found in response");
+            return null;
           }
-
           // Construct user data from backend response
           const userInfo = {
             id: userData.userId || userData.id || "user_" + Date.now(),
