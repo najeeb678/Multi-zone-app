@@ -56,7 +56,7 @@ export async function handler(req, { params }) {
 
     // 🔹 Make the backend request
     const response = await fetch(finalUrl, { method: req.method, headers, body });
-
+    console.log("✅ Backend response proxy :", response);
     console.log("✅ Backend response status:", response.status);
     return new NextResponse(response.body, {
       status: response.status,
