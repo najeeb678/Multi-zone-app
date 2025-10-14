@@ -5,9 +5,7 @@ export async function middleware(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
   const { pathname } = req.nextUrl;
-  if (req.headers.get("x-internal-ssr") === "true") {
-    return NextResponse.next();
-  }
+
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon.ico") ||
@@ -15,7 +13,8 @@ export async function middleware(req) {
     pathname.includes("/_next/image") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/v3/publicPage")
+    pathname.startsWith("/v3/publicPage") ||
+    pathname.startsWith("/api/be")
   ) {
     return NextResponse.next();
   }
