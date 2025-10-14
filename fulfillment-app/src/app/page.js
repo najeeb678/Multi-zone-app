@@ -15,7 +15,7 @@ export default function Page() {
   const loadClients = async () => {
     setLoading(true);
     try {
-      const response = await Api.getApi(`v2/api/MAN/client/get/as/list`);
+      const response = await Api.getApi(`api/MAN/client/get/as/list`);
       console.log("✅ Clients API Response:", response?.data?.data);
 
       const clientsData = response?.data?.data || [];
