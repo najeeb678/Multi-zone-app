@@ -34,7 +34,7 @@ export default function OrdersClient({ clientsData }) {
 
       // Use your proxy (will go through middleware for auth)
       // const response = await Api.getApi(`v2/api/MAN/client/get/as/list`);
-      const response = await Api.postApi(`v2/api/LM/order/get/for/admin?${queryParams}`);
+      const response = await Api.postApi(`api/LM/order/get/for/admin?${queryParams}`);
       // const response = await Api.getApi(`${ordersEndpoint}${queryParams}`);
 
       console.log("✅ Orders API Response:", response?.data);

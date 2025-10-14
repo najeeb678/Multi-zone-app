@@ -1,39 +1,64 @@
-// app/api/be/[...path]/route.js
-import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-const BACKEND_URL = process.env.APP_BASE_URL;
+const BACKEND_URL = process.env.APP_BASE_URL || "https://devapi.techship.me";
 
-export async function handler(req, { params }) {
-    console.log("req",req)
-    console.log("params11",params)
+export async function handler(req) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    console.log("➡️ API call received:", req.method);
 
-    if (!token || !token.backendToken) {
+    // ✅ Get token from cookie/session
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    console.log("🔑 Token from cookie:", token);
+
+    // ✅ Get backend token either from header or session
+    const authHeader = req.headers.get("authorization");
+    let sessionToken = authHeader?.split(" ")[1];
+    if (!sessionToken && token?.backendToken) {
+      sessionToken = token.backendToken;
+    }
+
+    if (!sessionToken) {
+      console.log("❌ No session token found");
       return NextResponse.json(
         { STATUS: "FAILED", MESSAGE: "Authentication required" },
         { status: 401 }
       );
     }
 
-    const apiPath = params.path.join("/");
-    const queryString = new URL(req.url).search;
-    const finalUrl = `${BACKEND_URL}/${apiPath}${queryString}`;
+    // ✅ Construct backend URL
+    const url = new URL(req.url);
+    const apiPath = url.pathname.replace("/api/be/", "");
+    const finalUrl = `${BACKEND_URL}/${apiPath}${url.search}`;
+    console.log("📍 Target backend URL:", finalUrl);
 
-    // Build headers for backend
+    // ✅ Clone and forward important headers
     const headers = new Headers();
-    headers.set("Content-Type", "application/json");
-    headers.set("Authorization", `Bearer ${token.backendToken}`);
-    headers.set("x-host", process.env.DEV_HOST || "basit.techship.me");
-    headers.set("User-Agent", "MultiZone-Proxy/1.0");
+    req.headers.forEach((value, key) => {
+      const lowerKey = key.toLowerCase();
+      if (!["host", "connection", "upgrade"].includes(lowerKey)) {
+        headers.set(key, value);
+      }
+    });
 
-    // Copy body if POST/PUT/PATCH
+    headers.set("Content-Type", "application/x-www-form-urlencoded");
+    headers.set("Authorization", `Bearer ${sessionToken}`);
+    headers.set("x-host", process.env.DEV_HOST || "basit.techship.me");
+  
+
+    if (req.headers.get("cookie")) {
+      headers.set("Cookie", req.headers.get("cookie"));
+    }
+
+    // ✅ Forward body for non-GET/HEAD
     const body = req.method !== "GET" && req.method !== "HEAD" ? await req.text() : undefined;
 
+    // ✅ Make the request
     const response = await fetch(finalUrl, { method: req.method, headers, body });
-    const responseBody = await response.text();
+    console.log("✅ Backend response status:", response.status);
 
+    // ✅ Pass response through
+    const responseBody = await response.text();
     return new NextResponse(responseBody, {
       status: response.status,
       headers: response.headers,
@@ -49,3 +74,55 @@ export const POST = handler;
 export const PUT = handler;
 export const DELETE = handler;
 export const PATCH = handler;
+
+// import { NextResponse } from "next/server";
+// import { getToken } from "next-auth/jwt";
+
+// const BACKEND_URL = process.env.APP_BASE_URL;
+
+// export async function handler(req) {
+//   try {
+//     console.log("➡️ API call received:", req.method);
+
+//     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+//     console.log("🔑 Token from cookie:", token);
+
+//     const authHeader = req.headers.get("authorization");
+
+//     let sessionToken = authHeader?.split(" ")[1];
+//     if (!sessionToken && token?.backendToken) {
+//       sessionToken = token.backendToken;
+//     }
+
+//     const url = new URL(req.url);
+//     const apiPath = url.pathname.replace("/api/be/", "");
+//     const queryString = url.search;
+//     const finalUrl = `${BACKEND_URL}/${apiPath}${queryString}`;
+//     console.log("📍 Target backend URL:", finalUrl);
+
+//     const headers = new Headers();
+//     headers.set("Content-Type", "application/json");
+//     headers.set("Authorization", `Bearer ${sessionToken}`);
+//     headers.set("x-host", process.env.DEV_HOST || "basit.techship.me");
+
+//     const body = req.method !== "GET" && req.method !== "HEAD" ? await req.text() : undefined;
+
+//     const response = await fetch(finalUrl, { method: req.method, headers, body });
+//     console.log("✅ Backend response status:", response.status);
+
+//     const responseBody = await response.text();
+//     return new NextResponse(responseBody, {
+//       status: response.status,
+//       headers: response.headers,
+//     });
+//   } catch (err) {
+//     console.error("❌ Proxy Error:", err);
+//     return NextResponse.json({ error: "Proxy failed" }, { status: 500 });
+//   }
+// }
+
+// export const GET = handler;
+// export const POST = handler;
+// export const PUT = handler;
+// export const DELETE = handler;
+// export const PATCH = handler;

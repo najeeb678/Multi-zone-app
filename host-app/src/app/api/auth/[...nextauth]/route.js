@@ -143,7 +143,7 @@ export const authOptions = {
       session.user.config = token.config || {};
       session.user.email = token.email || null;
       session.user.image = token.image || null;
-      console.log("session after:", session);
+      // console.log("session after:", session);
       return session;
     },
   },

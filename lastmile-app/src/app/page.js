@@ -1,31 +1,23 @@
-// subapp/app/v2/orders/page.js
 import OrdersClient from "@/components/Clients/OrdersClient";
-
-export const dynamic = "force-dynamic"; // ensures fresh SSR fetch
+import { cookies } from "next/headers";
 
 export default async function Page() {
-  let clients = [];
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("next-auth.session-token")?.value;
+  // console.log("sessionToken", sessionToken);
 
-  try {
-    const hostUrl = process.env.HOST_URL || "http://localhost:5801";
+  // use sessionToken in fetch headers
+  const hostUrl = process.env.HOST_URL || "http://localhost:5801";
+  const res = await fetch(`${hostUrl}/api/be/MAN/client/get/as/list`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${sessionToken}`,
+    },
+  });
 
-    // Server-to-server request to host, bypassing auth middleware
-    const res = await fetch(`${hostUrl}/api/be/MAN/client/get/as/list`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!res.ok) {
-      throw new Error(`Host proxy fetch failed: ${res.status}`);
-    }
-
-    const data = await res.json();
-    clients = data?.data || [];
-  } catch (error) {
-    console.error("❌ Server fetch failed:", error);
-  }
-
+  const data = await res.json();
+  const clients = data?.data || [];
+  console.log("clients11", clients);
   return <OrdersClient clientsData={clients} />;
 }
