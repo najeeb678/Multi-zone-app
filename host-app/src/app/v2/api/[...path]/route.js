@@ -14,7 +14,7 @@ export async function handler(req, { params }) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
     if (!token) {
-      console.log("❌ Authentication failed: no token found");
+      console.log("❌ Authentication failed111: no token found");
       return NextResponse.json(
         { STATUS: "FAILED", MESSAGE: "Authentication required" },
         { status: 401 }
