@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 const gltAPI = () => {
   const instance = axios.create({
-    baseURL: "", // proxy (host app)
+    baseURL: "",
     withCredentials: true,
   });
 
@@ -24,26 +24,21 @@ const gltAPI = () => {
 
       // 🔹 Unauthorized or Forbidden
       if (status === 401 || status === 403) {
-        console.log("message11122");
+        console.log("error111", error?.response);
         const message =
           status === 401
-            ? "Session expired. Redirecting to login..."
-            : error?.response?.data?.message || "Access denied.";
+            ? error?.response?.data?.message || "Access denied."
+            : "Session expired. Redirecting to login...";
 
         if (typeof window !== "undefined") {
           toast.error(message);
+          setTimeout(() => {
+            window.location.href = "/api/auth/signout";
+          }, 1500);
         }
 
-        try {
-          await fetch("/api/auth/signout", { method: "POST" });
-        } catch (logoutErr) {
-          console.error("❌ Error during logout:", logoutErr);
-        }
-
-        // Redirect after short delay
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 1500);
+        // Stop further axios execution
+        return new Promise(() => {}); // never resolve
       }
 
       return Promise.reject(error);

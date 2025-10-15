@@ -20,7 +20,8 @@ export async function handler(req, { params }) {
         { status: 401 }
       );
     }
-
+  let xyzToken="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiSDRzSUFBQUFBQUFBQTEyT3l3ckNNQkJGXzJYV1JWRGJUVmFLQ2dxS2dyZ1FLUkxUMFFiektKT1VJcVhfYmxJVnBNdDc1dHpMdENBTFlGbWFRTzJRRE5jSURPYUZsZ1lTUU0ybENwbkhQUFBvX0VoWUhRNE5KMXpiMEhEQUxua0NfbFhGM21wMzJPN1A0VDdZaVhyNXB3c2wwZmh2c0x6MjVhSW53TnItSGVBM0FUOXRzeHlBSXdyQzRNSjRNazJ6Z0JfRVAydFFjZWNhUzBXQWhIZENWMTY5ZmFLQlBJSkNFZ3BfSWhsY1V5dlZkV185VVVBbl9nQUFBQSIsImlhdCI6MTc2MDQ0OTk1OCwiZXhwIjoxNzYwNDkzMTU3fQ.hsw-YfKTXGsUKKiRzkLD-_l6WtV1wyitz1Gut866gPgs"
+   
     // 🔹 Construct backend URL
     const apiPath = resolvedParams.path.join("/");
     const queryString = new URL(req.url).search;
@@ -43,7 +44,7 @@ export async function handler(req, { params }) {
     headers.set("User-Agent", "MultiZone-Proxy/1.0");
 
     if (token.backendToken) {
-      headers.set("Authorization", `Bearer ${token.backendToken}`);
+      headers.set("Authorization", `Bearer ${xyzToken}`);
       console.log("🔑 Using bearer token for authentication");
     }
     if (req.headers.get("cookie")) {
@@ -56,7 +57,7 @@ export async function handler(req, { params }) {
 
     // 🔹 Make the backend request
     const response = await fetch(finalUrl, { method: req.method, headers, body });
-    console.log("✅ Backend response proxy :", response);
+    // console.log("✅ Backend response proxy :", response);
     console.log("✅ Backend response status:", response.status);
     return new NextResponse(response.body, {
       status: response.status,

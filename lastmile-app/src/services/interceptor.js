@@ -24,31 +24,21 @@ const gltAPI = () => {
 
       // 🔹 Unauthorized or Forbidden
       if (status === 401 || status === 403) {
-        console.log("message11122");
+        console.log("error111", error?.response);
         const message =
           status === 401
-            ? "Session expired. Redirecting to login..."
-            : error?.response?.data?.message || "Access denied.";
+            ? error?.response?.data?.message || "Access denied."
+            : "Session expired. Redirecting to login...";
 
         if (typeof window !== "undefined") {
           toast.error(message);
+          setTimeout(() => {
+            window.location.href = "/api/auth/signout";
+          }, 1500);
         }
 
-        try {
-          const hostUrl = process.env.NEXT_PUBLIC_HOST_URL || "http://localhost:5801";
-          console.warn("🚪 Redirecting to host signout:", hostUrl);
-
-          // Directly navigate to host signout endpoint (it’ll handle redirect to /login)
-          window.location.href = `${hostUrl}/api/auth/signout`;
-          return; // Stop execution after redirect
-        } catch (logoutErr) {
-          console.error("❌ Error during logout redirect:", logoutErr);
-        }
-
-        // Redirect after short delay
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 1500);
+        // Stop further axios execution
+        return new Promise(() => {}); // never resolve
       }
 
       return Promise.reject(error);
