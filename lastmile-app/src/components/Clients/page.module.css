@@ -191,3 +191,8 @@ a.secondary {
   margin-bottom: 10px;
   color: #fff;
 }
+.clients {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}

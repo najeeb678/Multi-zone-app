@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 
 export default function OrdersClient({ clientsData }) {
-  console.log("clients Data", clientsData);
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [clients, setClients] = useState(clientsData);
+  const [loading, setLoading] = useState({ clients: false, orders: false });
   const [pagination, setPagination] = useState({
     page: 1,
     size: 20,
@@ -23,8 +23,7 @@ export default function OrdersClient({ clientsData }) {
   }, []);
 
   const loadOrders = async (page = 1, size = 10) => {
-    // console.log("🚀 Fetching orders from backend...");
-    setLoading(true);
+    setLoading((prev) => ({ ...prev, orders: true }));
     try {
       const queryParams = new URLSearchParams({
         timezone: "Asia/Karachi",
@@ -32,10 +31,7 @@ export default function OrdersClient({ clientsData }) {
         page: page.toString(),
       });
 
-      // Use your proxy (will go through middleware for auth)
-      // const response = await Api.getApi(`v2/api/MAN/client/get/as/list`);
       const response = await Api.postApi(`api/LM/order/get/for/admin?${queryParams}`);
-      // const response = await Api.getApi(`${ordersEndpoint}${queryParams}`);
 
       console.log("✅ Orders API Response:", response?.data);
 
@@ -48,7 +44,23 @@ export default function OrdersClient({ clientsData }) {
       console.error("❌ Error loading orders:", error);
       setOrders([]);
     } finally {
-      setLoading(false);
+      setLoading((prev) => ({ ...prev, orders: false }));
+    }
+  };
+  const loadClients = async () => {
+    setLoading((prev) => ({ ...prev, clients: true }));
+    try {
+      const response = await Api.getApi(`api/MAN/client/get/as/list`);
+      console.log("✅ Clients API Response:", response?.data?.data);
+
+      const clientsData = response?.data?.data || [];
+
+      setClients(clientsData);
+    } catch (error) {
+      console.error("❌ Error loading clients:", error);
+      setClients([]);
+    } finally {
+      setLoading((prev) => ({ ...prev, clients: false }));
     }
   };
 
@@ -79,14 +91,14 @@ export default function OrdersClient({ clientsData }) {
         </button>
         <button
           onClick={() => (window.location.href = "/v3")}
-          disabled={loading}
+          disabled={loading.clients || loading.orders}
           style={{
             padding: "10px 20px",
             backgroundColor: "#0070f3",
             color: "white",
             border: "none",
             borderRadius: "6px",
-            cursor: loading ? "wait" : "pointer",
+            cursor: loading.clients || loading.orders ? "wait" : "pointer",
             marginBottom: "20px",
             marginRight: "10px",
           }}
@@ -95,18 +107,33 @@ export default function OrdersClient({ clientsData }) {
         </button>
         <button
           onClick={() => loadOrders()}
-          disabled={loading}
+          disabled={loading.orders}
           style={{
             padding: "10px 20px",
             backgroundColor: "#0070f3",
             color: "white",
             border: "none",
             borderRadius: "6px",
-            cursor: loading ? "wait" : "pointer",
+            cursor: loading.orders ? "wait" : "pointer",
             marginBottom: "20px",
           }}
         >
-          {loading ? "Loading..." : "🔄 Refresh Orders"}
+          {loading.orers  ? "Loading..." : "🔄 Refresh Orders"}
+        </button>
+        <button
+          onClick={loadClients}
+          disabled={loading.clients}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#0070f3",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: loading.clients ? "wait" : "pointer",
+            marginBottom: "20px",
+          }}
+        >
+          {loading.clients ? "Loading..." : "🔄 Refresh Clients"}
         </button>
       </div>
       <div className={styles.sessionCard}>
@@ -145,7 +172,6 @@ export default function OrdersClient({ clientsData }) {
           <p>Loading user info...</p>
         )}
       </div>
-
       {orders.length > 0 ? (
         <div className={styles.orders}>
           {orders.map((order) => (
@@ -173,6 +199,34 @@ export default function OrdersClient({ clientsData }) {
       ) : (
         !loading && (
           <p style={{ color: "#999", fontStyle: "italic" }}>No orders found. Try refreshing.</p>
+        )
+      )}
+      <hr style={{ width: "100%", color: "#999" }} />
+
+      {clients.length > 0 ? (
+        <div className={styles.clients}>
+          {clients.map((client) => (
+            <div
+              key={client.id}
+              style={{
+                padding: "15px",
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                backgroundColor: "#333",
+                color: "#afa3a3ff",
+              }}
+            >
+              <div style={{ fontWeight: "bold", marginBottom: "6px" }}>
+                {client.name} (#{client.id})
+              </div>
+              <div>Type: {client.clientType}</div>
+              <div>Inventory Alert Threshold: {client.inventoryAlertThreshold}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        !loading && (
+          <p style={{ color: "#999", fontStyle: "italic" }}>No clients found. Try refreshing.</p>
         )
       )}
     </div>

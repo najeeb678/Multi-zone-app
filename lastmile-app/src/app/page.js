@@ -9,6 +9,7 @@ export default async function Page() {
     const api = await ssrAPI();
     const res = await api.get("api/MAN/client/get/as/list");
     const clients = res.data.data || [];
+    console.log("Clients in SSR", clients);
     return <OrdersClient clientsData={clients} />;
   } catch (error) {
     if (error.message === "UNAUTHORIZED") {
