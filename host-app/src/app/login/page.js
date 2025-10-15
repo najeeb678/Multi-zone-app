@@ -22,6 +22,20 @@ const LoginPage = () => {
   }, [status, router]);
 
   useEffect(() => {
+    // Check for reset flag in URL when component mounts
+    const queryParams = new URLSearchParams(window.location.search);
+    if (queryParams.has("reset")) {
+      // Remove the reset parameter
+      queryParams.delete("reset");
+      const newUrl =
+        window.location.pathname + (queryParams.toString() ? `?${queryParams.toString()}` : "");
+      window.history.replaceState({}, "", newUrl);
+
+      // Force refresh the session to ensure it's cleared client-side as well
+      window.location.reload();
+      return;
+    }
+
     const fetchProviders = async () => {
       try {
         const res = await getProviders();
