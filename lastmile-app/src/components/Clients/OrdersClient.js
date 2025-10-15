@@ -3,8 +3,8 @@ import Api from "@/services/api";
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 
-export default function OrdersClient({ clients }) {
-  console.log("clients Data", clients);
+export default function OrdersClient({ clientsData }) {
+  console.log("clients Data", clientsData);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -13,14 +13,14 @@ export default function OrdersClient({ clients }) {
     total: 0,
   });
   const [session, setSession] = useState(null);
-  // useEffect(() => {
-  //   fetch("/api/session")
-  //     .then((res) => res.json())
-  //     .then((data) => setSession(data));
-  // }, []);
-  // useEffect(() => {
-  //   loadOrders();
-  // }, []);
+  useEffect(() => {
+    fetch("/api/session")
+      .then((res) => res.json())
+      .then((data) => setSession(data));
+  }, []);
+  useEffect(() => {
+    loadOrders();
+  }, []);
 
   const loadOrders = async (page = 1, size = 10) => {
     // console.log("🚀 Fetching orders from backend...");
@@ -93,7 +93,7 @@ export default function OrdersClient({ clients }) {
         >
           {"Fulfillment App"}
         </button>
-        {/* <button
+        <button
           onClick={() => loadOrders()}
           disabled={loading}
           style={{
@@ -107,7 +107,7 @@ export default function OrdersClient({ clients }) {
           }}
         >
           {loading ? "Loading..." : "🔄 Refresh Orders"}
-        </button> */}
+        </button>
       </div>
       <div className={styles.sessionCard}>
         <h2>User Info</h2>

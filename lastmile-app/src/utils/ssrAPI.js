@@ -9,7 +9,7 @@ export const ssrAPI = async () => {
     cookieStore.get("next-auth.session-token")?.value ||
     cookieStore.get("__Secure-next-auth.session-token")?.value;
 
-  const hostUrl = process.env.HOST_URL || "http://localhost:5801";
+  const hostUrl = process.env.HOST_URL;
 
   const instance = axios.create({
     baseURL: `${hostUrl}/`,
@@ -35,16 +35,13 @@ export const ssrAPI = async () => {
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
-      const status =
-        error?.response?.status;
-      console.log("error11",error)
-      // if (status === 401 || status === 403) {
-
-      //   // Just throw a special error, don't call redirect() here
-      //   const redirectError = new Error("UNAUTHORIZED");
-      //   redirectError.code = status;
-      //   throw redirectError;
-      // }
+      const status = error?.response?.status;
+      if (status === 401 || status === 403) {
+        // Just throw a special error, don't call redirect() here
+        const redirectError = new Error("UNAUTHORIZED");
+        redirectError.code = status;
+        throw redirectError;
+      }
       throw error;
     }
   );

@@ -44,8 +44,8 @@ export async function handler(req, { params }) {
     headers.set("User-Agent", "MultiZone-Proxy/1.0");
 
     if (token.backendToken) {
-      // headers.set("Authorization", `Bearer ${token.backendToken}`);
-      headers.set("Authorization", `Bearer ${xyzToken}`);
+      headers.set("Authorization", `Bearer ${token.backendToken}`);
+      // headers.set("Authorization", `Bearer ${xyzToken}`);
       console.log("🔑 Using bearer token for authentication");
     }
     if (req.headers.get("cookie")) {

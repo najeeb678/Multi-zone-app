@@ -9,10 +9,10 @@ export default async function Page() {
     const api = await ssrAPI();
     const res = await api.get("api/MAN/client/get/as/list");
     const clients = res.data.data || [];
-    return <OrdersClient clients={clients} />;
+    return <OrdersClient clientsData={clients} />;
   } catch (error) {
     if (error.message === "UNAUTHORIZED") {
-      return redirect(`${process.env.HOST_URL || "http://localhost:5801"}/api/auth/signout`);
+      return redirect(`${process.env.HOST_URL}/api/auth/signout`);
     }
     console.error("Error fetching client data:", error);
     return <OrdersClient clients={[]} />;
