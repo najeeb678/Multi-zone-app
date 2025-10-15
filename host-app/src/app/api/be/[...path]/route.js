@@ -26,7 +26,7 @@ export async function handler(req) {
     // ✅ Forward headers safely
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
-    headers.set("Authorization", `Bearer ${xyzToken}`);
+    headers.set("Authorization", `Bearer ${sessionToken}`);
     headers.set("x-host", process.env.DEV_HOST || "basit.techship.me");
 
     // ✅ Read body for non-GET requests

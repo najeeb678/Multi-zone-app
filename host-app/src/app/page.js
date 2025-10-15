@@ -28,16 +28,9 @@ const Home = () => {
     );
   }
 
-  const handleLogout = async () => {
-    console.log("🚪 Logging out...");
-
-    // Sign out from NextAuth
-    await signOut({ redirect: false });
-
-    console.log("✅ User logged out");
-
-    // Redirect to login page
-    window.location.href = "/login";
+  const handleLogout = () => {
+    const hostUrl = window.location.origin.replace(/:\d+/, ":5801");
+    window.location.href = `${hostUrl}/api/auth/signout`;
   };
 
   return (
