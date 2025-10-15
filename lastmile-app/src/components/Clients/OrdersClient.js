@@ -2,6 +2,7 @@
 import Api from "@/services/api";
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
+import { globalLogout } from "@/utils/auth";
 
 export default function OrdersClient({ clientsData }) {
   const [orders, setOrders] = useState([]);
@@ -118,7 +119,7 @@ export default function OrdersClient({ clientsData }) {
             marginBottom: "20px",
           }}
         >
-          {loading.orers  ? "Loading..." : "🔄 Refresh Orders"}
+          {loading.orers ? "Loading..." : "🔄 Refresh Orders"}
         </button>
         <button
           onClick={loadClients}
@@ -134,6 +135,12 @@ export default function OrdersClient({ clientsData }) {
           }}
         >
           {loading.clients ? "Loading..." : "🔄 Refresh Clients"}
+        </button>
+        <button
+          onClick={globalLogout}
+          style={{ ...buttonStyle, backgroundColor: "#ef4444", marginLeft: "10px" }}
+        >
+          {"🚪 Logout"}
         </button>
       </div>
       <div className={styles.sessionCard}>
@@ -232,3 +239,13 @@ export default function OrdersClient({ clientsData }) {
     </div>
   );
 }
+const buttonStyle = {
+  padding: "10px 20px",
+  backgroundColor: "#0070f3",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  marginBottom: "20px",
+  marginRight: "10px",
+};
