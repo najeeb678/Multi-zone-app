@@ -12,6 +12,7 @@ export default async function Page() {
     return <OrdersClient clients={clients} />;
   } catch (error) {
     if (error.redirect) {
+      console.log("error11", error);
       // Use redirect to navigate to login page when unauthorized
       redirect(error.redirect);
     }

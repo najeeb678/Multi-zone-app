@@ -35,9 +35,14 @@ const gltAPI = () => {
         }
 
         try {
-          await fetch("/api/auth/signout", { method: "POST" });
+          const hostUrl = process.env.NEXT_PUBLIC_HOST_URL || "http://localhost:5801";
+          console.warn("🚪 Redirecting to host signout:", hostUrl);
+
+          // Directly navigate to host signout endpoint (it’ll handle redirect to /login)
+          window.location.href = `${hostUrl}/api/auth/signout`;
+          return; // Stop execution after redirect
         } catch (logoutErr) {
-          console.error("❌ Error during logout:", logoutErr);
+          console.error("❌ Error during logout redirect:", logoutErr);
         }
 
         // Redirect after short delay
