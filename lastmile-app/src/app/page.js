@@ -13,7 +13,7 @@ export default async function Page() {
     return <OrdersClient clientsData={clients} />;
   } catch (error) {
     if (error.message === "UNAUTHORIZED") {
-      return redirect(`${process.env.HOST_URL}/api/auth/signout`);
+      return redirect(`${process.env.NEXT_PUBLIC_HOST_URL}/api/auth/signout`);
     }
     console.error("Error fetching client data:", error);
     return <OrdersClient clients={[]} />;
