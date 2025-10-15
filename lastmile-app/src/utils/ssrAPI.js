@@ -9,8 +9,8 @@ export const ssrAPI = async () => {
     cookieStore.get("next-auth.session-token")?.value ||
     cookieStore.get("__Secure-next-auth.session-token")?.value;
 
-  const hostUrl = "";
-  // const hostUrl = process.env.HOST_URL || "http://localhost:5801";
+
+  const hostUrl = process.env.HOST_URL || "http://localhost:5801";
 
   const instance = axios.create({
     baseURL: `${hostUrl}/`,
