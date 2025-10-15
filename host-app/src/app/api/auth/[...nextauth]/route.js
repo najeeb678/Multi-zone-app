@@ -106,30 +106,36 @@ export const authOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
-      // console.log("token before:", token);
+      // First login
       if (user) {
-        // console.log("user from authorize:", user);
-        token.id = user.id;
-        token.role = user.role;
-        token.tenant = user.tenant;
-        token.config = user.config;
-        token.backendToken = user.backendToken; // store backend token securely
+        return {
+          ...token,
+          id: user.id,
+          role: user.role,
+          tenant: user.tenant,
+          backendToken: user.backendToken,
+          refreshToken: user.refreshToken, // save refresh token
+          accessTokenExpires: Date.now() + 60 * 60 * 1000, // e.g., 1 hour expiry, adjust if backend gives expiry
+        };
       }
-      // console.log("token after:", token);
-      return token;
+
+      // Check if token has expired
+      if (Date.now() < token.accessTokenExpires) {
+        // Token still valid
+        return token;
+      }
+
+      // Token expired — refresh it
+      console.log("🔄 Access token expired, refreshing...");
+      return await refreshAccessToken(token);
     },
 
     async session({ session, token }) {
-      // console.log("session before:", session);
-      // console.log("token:", token);
       session.user.id = token.id;
-      session.user.name = token.name || "";
-      session.user.role = token.role || "user";
-      session.user.tenant = token.tenant || "";
-      session.user.config = token.config || {};
-      session.user.email = token.email || null;
-      session.user.image = token.image || null;
-      // console.log("session after:", session);
+      session.user.role = token.role;
+      session.user.tenant = token.tenant;
+      session.user.backendToken = token.backendToken; // pass backend token to client
+      session.user.accessTokenExpires = token.accessTokenExpires;
       return session;
     },
   },
@@ -161,7 +167,7 @@ async function refreshAccessToken(token) {
 
     return {
       ...token,
-      accessToken: data.accessToken,
+      backendToken: data.accessToken,
       refreshToken: data.refreshToken || token.refreshToken,
       accessTokenExpires: new Date(data.expiresAt).getTime(),
     };
@@ -173,13 +179,9 @@ async function refreshAccessToken(token) {
     };
   }
 }
+
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
-
-
-
-
-
 
 // import NextAuth from "next-auth";
 // import CredentialsProvider from "next-auth/providers/credentials";
@@ -346,5 +348,3 @@ export { handler as GET, handler as POST };
 
 // const handler = NextAuth(authOptions);
 // export { handler as GET, handler as POST };
-
-
