@@ -1,5 +1,6 @@
 import OrdersClient from "@/components/Clients/OrdersClient";
 import { ssrAPI } from "@/utils/ssrAPI";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -8,11 +9,12 @@ export default async function Page() {
     const api = await ssrAPI();
     const res = await api.get("api/MAN/client/get/as/list");
     const clients = res.data.data || [];
-    console.log("SSR : ", clients);
     return <OrdersClient clients={clients} />;
   } catch (error) {
-    console.error("Error fetching client data:", error.message);
-    // Return component with empty clients array to avoid breaking the UI
+    if (error.message === "UNAUTHORIZED") {
+      return redirect(`${process.env.HOST_URL || "http://localhost:5801"}/api/auth/signout`);
+    }
+    console.error("Error fetching client data:", error);
     return <OrdersClient clients={[]} />;
   }
 }

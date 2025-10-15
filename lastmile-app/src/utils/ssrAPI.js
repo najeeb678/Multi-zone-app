@@ -9,7 +9,6 @@ export const ssrAPI = async () => {
     cookieStore.get("next-auth.session-token")?.value ||
     cookieStore.get("__Secure-next-auth.session-token")?.value;
 
-
   const hostUrl = process.env.HOST_URL || "http://localhost:5801";
 
   const instance = axios.create({
@@ -35,18 +34,17 @@ export const ssrAPI = async () => {
   // 🚨 Handle unauthorized responses automatically
   instance.interceptors.response.use(
     (response) => response,
-    async (error) => {
-      const status = error?.response?.status;
-      const url = error?.config?.url;
+    (error) => {
+      const status =
+        error?.response?.status;
+      console.log("error11",error)
+      // if (status === 401 || status === 403) {
 
-      if (status === 401 || status === 403) {
-        console.error(`🚫 [SSR ${status}] Unauthorized access to ${url}`);
-        const hostUrl = process.env.HOST_URL || "http://localhost:5801";
-
-        // ✅ Immediately redirect from here
-        redirect(`${hostUrl}/api/auth/signout`);
-      }
-
+      //   // Just throw a special error, don't call redirect() here
+      //   const redirectError = new Error("UNAUTHORIZED");
+      //   redirectError.code = status;
+      //   throw redirectError;
+      // }
       throw error;
     }
   );
