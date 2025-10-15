@@ -3,8 +3,8 @@ import Api from "@/services/api";
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 
-export default function OrdersClient({ clientsData }) {
-  console.log("clients Data", clientsData);
+export default function OrdersClient({ clients }) {
+  console.log("clients Data", clients);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({

@@ -12,10 +12,12 @@ export const ssrAPI = async () => {
   const hostUrl = process.env.HOST_URL || "http://localhost:5801";
 
   const instance = axios.create({
-    baseURL: `${hostUrl}/api/be/`,
+    baseURL: `${hostUrl}/`,
     withCredentials: true,
+    decompress: false, // Disable automatic decompression
     headers: {
       "Content-Type": "application/json",
+      "Accept-Encoding": "identity", // Request uncompressed response
       ...(sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {}),
     },
   });
