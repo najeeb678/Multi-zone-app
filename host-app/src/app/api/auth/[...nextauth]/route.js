@@ -123,11 +123,22 @@ export const authOptions = {
       // First login
       if (user) {
         console.log("🟢 First login, storing tokens in JWT");
-        // Extract refresh token from user object if available or create one
+        // Extract refresh token from user object if available
         const refreshToken = user.refreshToken || user.refresh_token;
 
-        // Calculate token expiry - 55 minutes (slightly less than the common 1 hour to ensure refresh happens before expiry)
-        const tokenExpiry = Date.now() + 55 * 60 * 1000;
+        // Use token expiry provided by the backend, or fallback to a default if not provided
+        let accessTokenExpires;
+        if (user.expiresAt) {
+          // If backend provides an explicit expiry date
+          accessTokenExpires = new Date(user.expiresAt).getTime();
+          console.log(
+            `🕒 Using backend-provided token expiry: ${new Date(accessTokenExpires).toISOString()}`
+          );
+        } else {
+          // Fallback to a default expiry (12 hours)
+          accessTokenExpires = Date.now() + 12 * 60 * 60 * 1000;
+          console.log(`🕒 Using default token expiry: ${new Date(accessTokenExpires).toISOString()}`);
+        }
 
         return {
           ...token,
@@ -136,7 +147,7 @@ export const authOptions = {
           tenant: user.tenant,
           backendToken: user.backendToken,
           refreshToken: refreshToken, // save refresh token
-          accessTokenExpires: tokenExpiry,
+          accessTokenExpires: accessTokenExpires,
         };
       }
 
@@ -227,14 +238,28 @@ async function refreshAccessToken(token) {
 
     console.log("🔄 Successfully refreshed access token");
 
-    // Calculate new expiry time (55 minutes)
-    const newExpiry = Date.now() + 55 * 60 * 1000;
+    // Get expiry time from backend response or calculate a default
+    let newExpiry;
+    if (data.expiresAt) {
+      newExpiry = new Date(data.expiresAt).getTime();
+      console.log(
+        `🕒 Using backend-provided refresh token expiry: ${new Date(newExpiry).toISOString()}`
+      );
+    } else if (data.expiresIn || data.expires_in) {
+      const expiresInSeconds = data.expiresIn || data.expires_in;
+      newExpiry = Date.now() + expiresInSeconds * 1000;
+      console.log(`🕒 Using backend-provided expiresIn value: ${expiresInSeconds}s`);
+    } else {
+      // Default fallback (12 hours) if backend doesn't provide expiry
+      newExpiry = Date.now() + 12 * 60 * 60 * 1000;
+      console.log(`🕒 Using default token expiry: ${new Date(newExpiry).toISOString()}`);
+    }
 
     return {
       ...token,
       backendToken: newAccessToken,
       refreshToken: newRefreshToken,
-      accessTokenExpires: data.expiresAt ? new Date(data.expiresAt).getTime() : newExpiry,
+      accessTokenExpires: newExpiry,
       error: undefined, // Clear any previous errors
     };
   } catch (error) {
