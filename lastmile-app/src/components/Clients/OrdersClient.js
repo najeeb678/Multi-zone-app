@@ -76,14 +76,14 @@ export default function OrdersClient({ clientsData }) {
       <div className={styles.buttons}>
         <button
           onClick={() => (window.location.href = "/")}
-          disabled={loading}
+          disabled={loading?.clients || loading?.orders}
           style={{
             padding: "10px 20px",
             backgroundColor: "#0070f3",
             color: "white",
             border: "none",
             borderRadius: "6px",
-            cursor: loading ? "wait" : "pointer",
+            cursor: loading?.clients || loading?.orders ? "wait" : "pointer",
             marginBottom: "20px",
             marginRight: "10px",
           }}
