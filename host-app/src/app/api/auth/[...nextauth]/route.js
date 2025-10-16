@@ -1,8 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
-let xyzToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiSDRzSUFBQUFBQUFBQTEyT3l3ckNNQkJGXzJYV1JWRGJUVmFLQ2dxS2dyZ1FLUkxUMFFiektKT1VJcVhfYmxJVnBNdDc1dHpMdENBTFlGbWFRTzJRRE5jSURPYUZsZ1lTUU0ybENwbkhQUFBvX0VoWUhRNE5KMXpiMEhEQUxua0NfbFhGM21wMzJPN1A0VDdZaVhyNXB3c2wwZmh2c0x6MjVhSW53TnItSGVBM0FUOXRzeHlBSXdyQzRNSjRNazJ6Z0JfRVAydFFjZWNhUzBXQWhIZENWMTY5ZmFLQlBJSkNFZ3BfSWhsY1V5dlZkV185VVVBbl9nQUFBQSIsImlhdCI6MTc2MDQ0OTk1OCwiZXhwIjoxNzYwNDkzMTU3fQ.hsw-YfKTXGsUKKiRzkLD-_l6WtV1wyitz1Gut866gPgs";
 
 export const authOptions = {
   providers: [
