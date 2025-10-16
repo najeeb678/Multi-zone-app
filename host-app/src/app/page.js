@@ -1,11 +1,25 @@
 "use client";
-import React from "react";
-import { useSession, signOut } from "next-auth/react";
+
+import React, { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const Home = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
-  // Show loading state
+  // ⏩ Handle unauthenticated redirect
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      // Add optional delay to show "Redirecting..." briefly
+      const timer = setTimeout(() => {
+        router.push("/login?redirect=/");
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [status, router]);
+
+  // ⏳ Loading state
   if (status === "loading") {
     return (
       <div style={styles.container}>
@@ -16,7 +30,7 @@ const Home = () => {
     );
   }
 
-  // Redirect to login if not authenticated (middleware should handle this, but just in case)
+  // 🚫 Not authenticated (fallback message before redirect)
   if (status === "unauthenticated") {
     return (
       <div style={styles.container}>

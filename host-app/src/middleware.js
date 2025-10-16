@@ -13,15 +13,9 @@ export async function middleware(req) {
     pathname.includes("/_next/image") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/v3/publicPage") 
+    pathname.startsWith("/v3/publicPage")
   ) {
     return NextResponse.next();
-  }
-
-  if (!token) {
-    const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
