@@ -43,7 +43,6 @@ export const authOptions = {
           });
 
           console.log("🎯 Backend response data:", res.data);
-          // console.log("🍪 Backend response cookies:", res.headers["set-cookie"]);
 
           // The working code returns a response like: { STATUS: "SUCCESS", USER: {...} }
           // But your earlier test showed a direct response, so handle both cases
