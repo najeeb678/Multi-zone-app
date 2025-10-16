@@ -97,6 +97,7 @@ export const authOptions = {
             userName: userData.userName,
             backendToken: backendToken, // backend-issued session token or JWT
             refreshToken: refreshToken, // refresh token for token renewal
+            accessTokenExpires: tokenExpiry,
           };
 
           console.log("✅ Backend authentication successful for:", userData.username);
