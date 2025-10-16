@@ -11,7 +11,6 @@ const Home = () => {
   // ⏩ Handle unauthenticated redirect
   useEffect(() => {
     if (status === "unauthenticated") {
-      // Add optional delay to show "Redirecting..." briefly
       const timer = setTimeout(() => {
         router.push("/login?redirect=/");
       }, 1000);
