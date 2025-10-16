@@ -24,9 +24,9 @@ const gltAPI = () => {
 
       // 🔹 Unauthorized or Forbidden
       if (status === 401 || status === 403) {
-        console.log("error111", error?.response);
+        // console.log("error111", error?.response?.data);
         const message =
-          status === 401
+          status === 401 || status === 403
             ? error?.response?.data?.message || "Access denied."
             : "Session expired. Redirecting to login...";
 

@@ -113,7 +113,8 @@ export const authOptions = {
 
   session: {
     strategy: "jwt",
-    maxAge: 7 * 24 * 60 * 60,
+    // maxAge: 7 * 24 * 60 * 60,
+    maxAge: 365 * 24 * 60 * 60, //NextAuth won’t force expire it before the backend says so.
   },
 
   jwt: {
@@ -130,23 +131,21 @@ export const authOptions = {
           tenant: user.tenant,
           backendToken: user.backendToken,
           refreshToken: user.refreshToken,
-          // backend already provides accessTokenExpires (in ms)
           accessTokenExpires: user.accessTokenExpires,
         };
       }
 
-      // 🧩 Prevent infinite loops
+      // Prevent loops
       if (token.error === "RefreshAccessTokenError") return token;
 
       const isExpired = Date.now() >= token.accessTokenExpires;
-      console.log("⏳ [JWT Callback] Token expired: ${isExpired}", isExpired);
+      // console.log("⏳ [JWT Callback] Token expired: ${isExpired}", isExpired);
       if (!isExpired) return token;
 
-      // 🧩 Attempt refresh safely
       try {
         return await refreshAccessToken(token);
       } catch (err) {
-        console.error("❌ refreshAccessToken failed:", err);
+        console.error(" refreshAccessToken failed:", err);
         return { ...token, error: "RefreshAccessTokenError" };
       }
     },
@@ -154,7 +153,7 @@ export const authOptions = {
       session.user.id = token.id;
       session.user.role = token.role;
       session.user.tenant = token.tenant;
-      session.user.backendToken = token.backendToken; // pass backend token to client
+      // session.user.backendToken = token.backendToken; // pass backend token to client
       session.user.accessTokenExpires = token.accessTokenExpires;
 
       // Pass error to client if refresh token failed
@@ -241,7 +240,7 @@ async function refreshAccessToken(token) {
       error: undefined, // Clear any previous errors
     };
   } catch (error) {
-    console.error("❌ Error refreshing access token:", error.message);
+    console.error("❌ Error refreshing access token:", error?.response?.data || error.message);
 
     // Check if the error is due to token being invalid/expired
     const isAuthError =

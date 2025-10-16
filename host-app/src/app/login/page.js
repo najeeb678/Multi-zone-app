@@ -21,33 +21,33 @@ const LoginPage = () => {
     }
   }, [status, router]);
 
-  // useEffect(() => {
-  //   // Check for reset flag in URL when component mounts
-  //   const queryParams = new URLSearchParams(window.location.search);
-  //   if (queryParams.has("reset")) {
-  //     // Remove the reset parameter
-  //     queryParams.delete("reset");
-  //     const newUrl =
-  //       window.location.pathname + (queryParams.toString() ? `?${queryParams.toString()}` : "");
-  //     window.history.replaceState({}, "", newUrl);
+  useEffect(() => {
+    // Check for reset flag in URL when component mounts
+    const queryParams = new URLSearchParams(window.location.search);
+    if (queryParams.has("reset")) {
+      // Remove the reset parameter
+      queryParams.delete("reset");
+      const newUrl =
+        window.location.pathname + (queryParams.toString() ? `?${queryParams.toString()}` : "");
+      window.history.replaceState({}, "", newUrl);
 
-  //     // Force refresh the session to ensure it's cleared client-side as well
-  //     window.location.reload();
-  //     return;
-  //   }
+      // Force refresh the session to ensure it's cleared client-side as well
+      window.location.reload();
+      return;
+    }
 
-  //   const fetchProviders = async () => {
-  //     try {
-  //       const res = await getProviders();
-  //       console.log("Available providers:", res);
-  //       setProviders(res);
-  //     } catch (error) {
-  //       console.error("Error fetching providers:", error);
-  //       setError("Failed to load authentication providers");
-  //     }
-  //   };
-  //   fetchProviders();
-  // }, []);
+    const fetchProviders = async () => {
+      try {
+        const res = await getProviders();
+        console.log("Available providers:", res);
+        setProviders(res);
+      } catch (error) {
+        console.error("Error fetching providers:", error);
+        setError("Failed to load authentication providers");
+      }
+    };
+    fetchProviders();
+  }, []);
 
   // Show loading while checking session
   if (status === "loading") {
