@@ -111,7 +111,7 @@ export const authOptions = {
 
   session: {
     strategy: "jwt",
-    maxAge: 24 * 60 * 60, // 1 day
+    maxAge: 7 * 24 * 60 * 60,
   },
 
   jwt: {
@@ -120,57 +120,33 @@ export const authOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
-      // First login
       if (user) {
-        console.log("🟢 First login, storing tokens in JWT");
-        // Extract refresh token from user object if available
-        const refreshToken = user.refreshToken || user.refresh_token;
-
-        // Use token expiry provided by the backend, or fallback to a default if not provided
-        let accessTokenExpires;
-        if (user.expiresAt) {
-          // If backend provides an explicit expiry date
-          accessTokenExpires = new Date(user.expiresAt).getTime();
-          console.log(
-            `🕒 Using backend-provided token expiry: ${new Date(accessTokenExpires).toISOString()}`
-          );
-        } else {
-          // Fallback to a default expiry (12 hours)
-          accessTokenExpires = Date.now() + 12 * 60 * 60 * 1000;
-          console.log(`🕒 Using default token expiry: ${new Date(accessTokenExpires).toISOString()}`);
-        }
-
         return {
           ...token,
           id: user.id,
           role: user.role,
           tenant: user.tenant,
           backendToken: user.backendToken,
-          refreshToken: refreshToken, // save refresh token
-          accessTokenExpires: accessTokenExpires,
+          refreshToken: user.refreshToken,
+          // backend already provides accessTokenExpires (in ms)
+          accessTokenExpires: user.accessTokenExpires,
         };
       }
 
-      // Force token to be expired for testing
+      // 🧩 Prevent infinite loops
+      if (token.error === "RefreshAccessTokenError") return token;
+
       const isExpired = Date.now() >= token.accessTokenExpires;
-      console.log("🔵 JWT callback:", { isExpired, token });
+      console.log("⏳ [JWT Callback] Token expired: ${isExpired}", isExpired);
+      if (!isExpired) return token;
 
-      if (!isExpired) {
-        console.log("🟢 Token still valid, using existing token");
-        return token;
-      }
-
-      // Token expired — refresh it
-      console.log("🔄 Access token expired, attempting to refresh token...");
-
-      // Check if there's already a refresh error, to prevent infinite refresh loops
-      if (token.error === "RefreshAccessTokenError") {
-        console.log("⚠️ Previous refresh attempt failed - forcing re-authentication");
-        // Force sign-out on client-side by returning the error
+      // 🧩 Attempt refresh safely
+      try {
+        return await refreshAccessToken(token);
+      } catch (err) {
+        console.error("❌ refreshAccessToken failed:", err);
         return { ...token, error: "RefreshAccessTokenError" };
       }
-
-      return await refreshAccessToken(token);
     },
     async session({ session, token }) {
       session.user.id = token.id;
@@ -226,7 +202,7 @@ async function refreshAccessToken(token) {
     );
 
     const data = res.data;
-    console.log("✅ Refresh API response received");
+    console.log("✅ Refresh API response received", data);
 
     // Extract tokens from the response, using standard OAuth field names or your custom ones
     const newAccessToken = data.accessToken || data.access_token || data.token;
@@ -236,7 +212,7 @@ async function refreshAccessToken(token) {
       throw new Error("No access token returned from refresh token endpoint");
     }
 
-    console.log("🔄 Successfully refreshed access token");
+    console.log("🔄 Successfully refreshed access token", newAccessToken);
 
     // Get expiry time from backend response or calculate a default
     let newExpiry;
