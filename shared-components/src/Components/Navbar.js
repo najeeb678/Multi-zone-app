@@ -3,24 +3,30 @@
 import React from "react";
 import styled from "styled-components";
 
-// Simple Navbar Container
+// Styled components
 const NavbarContainer = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 60px;
   padding: 0 2rem;
-  background-color: #260944; // example color
+  background-color: #260944;
   color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  /* Optional blur effect when scrolling */
+  backdrop-filter: blur(6px);
 `;
 
-// Logo
 const Logo = styled.div`
   font-size: 1.5rem;
   font-weight: bold;
+  cursor: pointer;
 `;
 
-// Menu items
 const Menu = styled.div`
   display: flex;
   column-gap: 1.5rem;
@@ -36,14 +42,18 @@ const MenuItem = styled.div`
   }
 `;
 
-const Navbar = ({ menuItems = ["Home", "Profile", "Settings", "Logout"], logoText = "TShip" }) => {
+const Navbar = ({ logoText = "TShip", menuItems = [], onLogoClick }) => {
   return (
     <NavbarContainer>
-      <Logo>{logoText}</Logo>
+      <Logo onClick={onLogoClick}>{logoText}</Logo>
       <Menu>
-        {menuItems.map((item) => (
-          <MenuItem key={item}>{item}</MenuItem>
-        ))}
+        {menuItems
+          .filter((item) => item.onClick) // hides items without click handler
+          .map((item, idx) => (
+            <MenuItem key={idx} onClick={item.onClick}>
+              {item.label}
+            </MenuItem>
+          ))}
       </Menu>
     </NavbarContainer>
   );
