@@ -2,6 +2,7 @@
 const nextConfig = {
   assetPrefix: "/fulfillment-static",
   basePath: "/v3",
+  transpilePackages: ["shared-components"],
   async rewrites() {
     return {
       beforeFiles: [

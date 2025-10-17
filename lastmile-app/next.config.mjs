@@ -2,6 +2,7 @@
 const nextConfig = {
   assetPrefix: "/lastmile-static",
   basePath: "/v2",
+  transpilePackages: ["shared-components"],
   async rewrites() {
     return {
       beforeFiles: [

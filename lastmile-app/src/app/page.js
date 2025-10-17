@@ -1,7 +1,7 @@
 import OrdersClient from "@/components/Clients/OrdersClient";
 import { ssrAPI } from "@/utils/ssrAPI";
 import { redirect } from "next/navigation";
-import { Navbar } from "app-tship";
+import { Navbar } from "shared-components";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {

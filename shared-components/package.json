@@ -1,12 +1,12 @@
 {
-  "name": "app-tship",
+  "name": "shared-components",
   "version": "1.0.0",
   "main": "src/index.js",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "dev": "echo \"No dev server for component library\" && exit 0",
+    "build": "echo \"No build needed for direct import\" && exit 0",
+    "prepare": "echo \"Component library ready\""
   },
   "dependencies": {
     "next": "15.5.5",

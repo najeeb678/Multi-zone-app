@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ["shared-components"],
   async rewrites() {
     return [
       // Route to lastmile-app
@@ -9,7 +10,7 @@ const nextConfig = {
       // host internally load content from destination, but keep the browser URL the same
       {
         source: "/v2/api/:path*",
-        destination: "/v2/api/:path*", 
+        destination: "/v2/api/:path*",
       },
       // ✅ Send only UI/Frontend routes to Lastmile zone
       {
@@ -40,9 +41,6 @@ const nextConfig = {
 };
 
 export default nextConfig;
-
-
-
 
 // const nextConfig = {
 //   async rewrites() {
