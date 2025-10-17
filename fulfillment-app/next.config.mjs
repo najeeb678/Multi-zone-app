@@ -2,7 +2,6 @@
 const nextConfig = {
   assetPrefix: "/fulfillment-static",
   basePath: "/v3",
-  transpilePackages: ["app-tship"],
   async rewrites() {
     return {
       beforeFiles: [
