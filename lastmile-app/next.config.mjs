@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ["app-tship"],
+  compiler: {
+    styledComponents: true,
+  },
   assetPrefix: "/lastmile-static",
   basePath: "/v2",
   async rewrites() {

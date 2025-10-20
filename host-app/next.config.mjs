@@ -1,17 +1,22 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // If host renders shared-components (or re-exports them) ensure transpile
+  transpilePackages: ["app-tship"],
+  compiler: {
+    styledComponents: true,
+  },
   async rewrites() {
     return [
       // Route to lastmile-app
-      // ✅ Host should handle all API routes (do NOT rewrite these)
+      //  Host should handle all API routes (do NOT rewrite these)
 
       // When the user visits source,
       // host internally load content from destination, but keep the browser URL the same
       {
         source: "/v2/api/:path*",
-        destination: "/v2/api/:path*", 
+        destination: "/v2/api/:path*",
       },
-      // ✅ Send only UI/Frontend routes to Lastmile zone
+      //  Send only UI/Frontend routes to Lastmile zone
       {
         source: "/v2/:path*",
         destination: `${process.env.LASTMILE_DOMAIN || "http://localhost:5802"}/v2/:path*`,
@@ -40,9 +45,6 @@ const nextConfig = {
 };
 
 export default nextConfig;
-
-
-
 
 // const nextConfig = {
 //   async rewrites() {
