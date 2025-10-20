@@ -39,6 +39,7 @@ export default function Page() {
             Testing real API connection through host middleware.
           </p>
         </div>
+
         <div className={styles.buttons}>
           <button
             onClick={() => (window.location.href = "/")}
@@ -135,91 +136,3 @@ const buttonStyle = {
   marginBottom: "20px",
   marginRight: "10px",
 };
-
-
-
-
-
-// "use client";
-
-// import Api from "@/services/api";
-// import { useState, useEffect } from "react";
-// import styles from "./page.module.css";
-// import { globalLogout } from "@/utils/auth";
-// import { Navbar } from "app-tship";
-// import { useRouter } from "next/navigation";
-
-// export default function Page() {
-//   const [clients, setClients] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   const router = useRouter();
-
-//   useEffect(() => {
-//     loadClients();
-//   }, []);
-
-//   const loadClients = async () => {
-//     setLoading(true);
-//     try {
-//       const response = await Api.getApi(`api/MAN/client/get/as/list`);
-//       setClients(response?.data?.data || []);
-//     } catch (error) {
-//       console.error("❌ Error loading clients:", error);
-//       setClients([]);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <>
-//       <Navbar
-//         logoText="TShip"
-//         onLogoClick={() => router.push("/")}
-//         menuItems={[
-//           { label: "🏠 Host App", onClick: () => router.push("/") },
-//           { label: "🚚 Last-Mile App", onClick: () => router.push("/v2") },
-//           { label: "📦 Fulfillment", onClick: () => router.push("/inventory") },
-//           { label: "🔄 Refresh", onClick: loadClients },
-//           { label: "🚪 Logout", onClick: globalLogout },
-//         ]}
-//       />
-
-//       <div className={styles.page}>
-//         <div className={styles.header}>
-//           <h1 style={{ color: "#c4b7b7ff" }}>📦 Fulfillment Dashboard (Zone v3)</h1>
-//           <p style={{ color: "#777", marginBottom: "20px" }}>
-//             Testing real API connection through host middleware.
-//           </p>
-//         </div>
-
-//         {clients.length > 0 ? (
-//           <div className={styles.clients}>
-//             {clients.map((client) => (
-//               <div
-//                 key={client.id}
-//                 style={{
-//                   padding: "15px",
-//                   border: "1px solid #ddd",
-//                   borderRadius: "8px",
-//                   backgroundColor: "#333",
-//                   color: "#afa3a3ff",
-//                 }}
-//               >
-//                 <div style={{ fontWeight: "bold", marginBottom: "6px" }}>
-//                   {client.name} (#{client.id})
-//                 </div>
-//                 <div>Type: {client.clientType}</div>
-//                 <div>Inventory Alert Threshold: {client.inventoryAlertThreshold}</div>
-//               </div>
-//             ))}
-//           </div>
-//         ) : (
-//           !loading && (
-//             <p style={{ color: "#999", fontStyle: "italic" }}>No clients found. Try refreshing.</p>
-//           )
-//         )}
-//       </div>
-//     </>
-//   );
-// }
