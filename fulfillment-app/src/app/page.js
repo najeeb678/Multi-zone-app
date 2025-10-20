@@ -1,13 +1,18 @@
 "use client";
+
 import Api from "@/services/api";
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import { globalLogout } from "@/utils/auth";
 import { Navbar } from "app-tship";
+import { useRouter } from "next/navigation";
+import LoadingSpinner from "@/components/LoadingSpinner";
+
 export default function Page() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
+  const router = useRouter();
+
   useEffect(() => {
     loadClients();
   }, []);
@@ -16,11 +21,7 @@ export default function Page() {
     setLoading(true);
     try {
       const response = await Api.getApi(`api/MAN/client/get/as/list`);
-      console.log("✅ Clients API Response:", response?.data?.data);
-
-      const clientsData = response?.data?.data || [];
-
-      setClients(clientsData);
+      setClients(response?.data?.data || []);
     } catch (error) {
       console.error("❌ Error loading clients:", error);
       setClients([]);
@@ -31,71 +32,39 @@ export default function Page() {
 
   return (
     <>
-      <Navbar />
+      <Navbar
+        logoText="TShip"
+        onLogoClick={() => router.push("/")}
+        menuItems={[
+          { label: "🏠 Host App", onClick: () => (window.location.href = "/") },
+          { label: "🚚 Last-Mile App", onClick: () => (window.location.href = "/v2") },
+          { label: "📦 Fulfillment", onClick: () => (window.location.href = "/inventory") },
+          { label: "🔄 Refresh Orders", onClick: loadClients },
+          { label: "🚪 Logout", onClick: globalLogout },
+        ]}
+      />
+
       <div className={styles.page}>
         <div className={styles.header}>
-          <h1 style={{ color: "#c4b7b7ff" }}>📦 Fulfillment Dashboard (Zone v3)</h1>
+          <div
+            style={{
+              display: "flex",
+              width: "100%",
+              alignItems: "center",
+              columnGap: "15px",
+            }}
+          >
+            <h1 style={{ color: "#c4b7b7ff", flex: 1 }}>📦 Fulfillment Dashboard (Zone v3)</h1>
+            <div style={{ width: "40px", height: "40px" }}>
+              <LoadingSpinner isLoading={loading} />
+            </div>
+          </div>
+
           <p style={{ color: "#777", marginBottom: "20px" }}>
             Testing real API connection through host middleware.
           </p>
         </div>
 
-        <div className={styles.buttons}>
-          <button
-            onClick={() => (window.location.href = "/")}
-            disabled={loading}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#0070f3",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              cursor: loading ? "wait" : "pointer",
-              marginBottom: "20px",
-              marginRight: "10px",
-            }}
-          >
-            Host App
-          </button>
-          <button
-            onClick={() => (window.location.href = "/v2")}
-            disabled={loading}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#0070f3",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              cursor: loading ? "wait" : "pointer",
-              marginBottom: "20px",
-              marginRight: "10px",
-            }}
-          >
-            Last-Mile App
-          </button>
-          <button
-            onClick={loadClients}
-            disabled={loading}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#0070f3",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              cursor: loading ? "wait" : "pointer",
-              marginBottom: "20px",
-            }}
-          >
-            {loading ? "Loading..." : "🔄 Refresh Clients"}
-          </button>
-          <button
-            onClick={globalLogout}
-            disabled={loggingOut}
-            style={{ ...buttonStyle, backgroundColor: "#ef4444", marginLeft: "10px" }}
-          >
-            {loggingOut ? "Logging out..." : "🚪 Logout"}
-          </button>
-        </div>
         {clients.length > 0 ? (
           <div className={styles.clients}>
             {clients.map((client) => (
@@ -126,13 +95,3 @@ export default function Page() {
     </>
   );
 }
-const buttonStyle = {
-  padding: "10px 20px",
-  backgroundColor: "#0070f3",
-  color: "white",
-  border: "none",
-  borderRadius: "6px",
-  cursor: "pointer",
-  marginBottom: "20px",
-  marginRight: "10px",
-};
