@@ -3,8 +3,7 @@
 import Api from "@/services/api";
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
-import { globalLogout } from "@/utils/auth";
-import { Navbar } from "app-tship";
+
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
@@ -32,18 +31,6 @@ export default function Page() {
 
   return (
     <>
-      <Navbar
-        logoText="TShip"
-        onLogoClick={() => (window.location.href = "/")}
-        menuItems={[
-          { label: "🏠 Host App", onClick: () => (window.location.href = "/") },
-          { label: "🚚 Last-Mile App", onClick: () => (window.location.href = "/v2") },
-          { label: "📦 Fulfillment", onClick: () => (window.location.href = "/inventory") },
-
-          { label: "🚪 Logout", onClick: globalLogout },
-        ]}
-      />
-
       <div className={styles.page}>
         <div className={styles.header}>
           <div

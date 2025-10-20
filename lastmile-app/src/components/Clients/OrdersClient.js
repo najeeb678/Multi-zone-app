@@ -2,8 +2,6 @@
 import Api from "@/services/api";
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
-import { globalLogout } from "@/utils/auth";
-import { Navbar } from "app-tship";
 
 export default function OrdersClient({ clientsData }) {
   const [orders, setOrders] = useState([]);
@@ -68,15 +66,6 @@ export default function OrdersClient({ clientsData }) {
 
   return (
     <>
-      <Navbar
-        logoText="TShip"
-        onLogoClick={() => (window.location.href = "/")}
-        menuItems={[
-          { label: "🏠 Host App", onClick: () => (window.location.href = "/") },
-          { label: "📦 Fulfillment App", onClick: () => (window.location.href = "/v3") },
-          { label: "🚪 Logout", onClick: globalLogout },
-        ]}
-      />
       <div className={styles.page}>
         <div className={styles.header}>
           <h1 style={{ color: "#c4b7b7ff" }}>🚛 Last Mile Orders</h1>
@@ -85,7 +74,6 @@ export default function OrdersClient({ clientsData }) {
           </p>
         </div>
         <div className={styles.buttons}>
-     
           <button
             onClick={() => loadOrders()}
             disabled={loading.orders}
@@ -116,7 +104,6 @@ export default function OrdersClient({ clientsData }) {
           >
             {loading.clients ? "Loading..." : "🔄 Refresh Clients"}
           </button>
-     
         </div>
         <div className={styles.sessionCard}>
           <h2>User Info</h2>
