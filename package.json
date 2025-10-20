@@ -15,8 +15,5 @@
     "micro-frontends"
   ],
   "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "styled-components": "^6.1.19"
-  }
+  "license": "MIT"
 }
