@@ -2,6 +2,7 @@
 import Api from "@/services/api";
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
+import { ClientCard, OrderCard } from "app-tship";
 
 export default function OrdersClient({ clientsData }) {
   const [orders, setOrders] = useState([]);
@@ -177,25 +178,7 @@ export default function OrdersClient({ clientsData }) {
         {orders.length > 0 ? (
           <div className={styles.orders}>
             {orders.map((order) => (
-              <div
-                key={order.id}
-                style={{
-                  padding: "15px",
-                  border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  backgroundColor: "#333",
-                  color: "#afa3a3ff",
-                }}
-              >
-                <div style={{ fontWeight: "bold", marginBottom: "6px" }}>
-                  #{order.trackingNumber || order.id}
-                </div>
-                <div>Customer: {order.customerName}</div>
-                <div>City: {order.deliveryCity}</div>
-                <div>Status: {order.status}</div>
-                <div>COD: {order.codAmount}</div>
-                <div>Date: {order.createdDate}</div>
-              </div>
+              <OrderCard key={order.id} order={order} />
             ))}
           </div>
         ) : (
@@ -208,22 +191,7 @@ export default function OrdersClient({ clientsData }) {
         {clients.length > 0 ? (
           <div className={styles.clients}>
             {clients.map((client) => (
-              <div
-                key={client.id}
-                style={{
-                  padding: "15px",
-                  border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  backgroundColor: "#333",
-                  color: "#afa3a3ff",
-                }}
-              >
-                <div style={{ fontWeight: "bold", marginBottom: "6px" }}>
-                  {client.name} (#{client.id})
-                </div>
-                <div>Type: {client.clientType}</div>
-                <div>Inventory Alert Threshold: {client.inventoryAlertThreshold}</div>
-              </div>
+              <ClientCard key={client.id} client={client} />
             ))}
           </div>
         ) : (
@@ -231,7 +199,7 @@ export default function OrdersClient({ clientsData }) {
             <p style={{ color: "#999", fontStyle: "italic" }}>No clients found. Try refreshing.</p>
           )
         )}
-      </div>{" "}
+      </div>
     </>
   );
 }
