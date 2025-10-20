@@ -75,6 +75,38 @@ export default function OrdersClient({ clientsData }) {
         </div>
         <div className={styles.buttons}>
           <button
+            onClick={() => (window.location.href = "v2/orders")}
+            disabled={loading.clients || loading.orders}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#0070f3",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: loading.clients || loading.orders ? "wait" : "pointer",
+              marginBottom: "20px",
+              marginRight: "10px",
+            }}
+          >
+            {"Orders Page"}
+          </button>
+          <button
+            onClick={() => (window.location.href = "v2/deliveries")}
+            disabled={loading.clients || loading.orders}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#0070f3",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: loading.clients || loading.orders ? "wait" : "pointer",
+              marginBottom: "20px",
+              marginRight: "10px",
+            }}
+          >
+            {"Delivery Page"}
+          </button>
+          <button
             onClick={() => loadOrders()}
             disabled={loading.orders}
             style={{

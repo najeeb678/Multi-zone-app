@@ -2,7 +2,15 @@
 
 import React, { useState } from "react";
 import { Button, SearchInput, DataTable } from "app-tship";
-
+import styled from "styled-components";
+const MainContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  gap: 20px;
+`;
 const InventoryPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -68,30 +76,37 @@ const InventoryPage = () => {
   };
 
   return (
-    <div className="container">
+    <MainContainer>
       <h1>Inventory Management</h1>
+      <p>Track inventory levels, product categories, and restock alerts.</p>
+      <Button variant="secondary" onClick={() => (window.location.href = "/v3")}>
+        Go Back to Fulfillment app
+      </Button>
+    </MainContainer>
+    //   <div className="container">
+    //     <h1>Inventory Management</h1>
 
-      <div className="search-section">
-        <SearchInput onSearch={handleSearch} placeholder="Search products by name or category..." />
-      </div>
+    //     <div className="search-section">
+    //       <SearchInput onSearch={handleSearch} placeholder="Search products by name or category..." />
+    //     </div>
 
-      <div className="actions-section" style={{ margin: "20px 0" }}>
-        <Button variant="primary">Add New Product</Button>
-      </div>
+    //     <div className="actions-section" style={{ margin: "20px 0" }}>
+    //       <Button variant="primary">Add New Product</Button>
+    //     </div>
 
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <DataTable
-          columns={columns}
-          data={searchResults.length > 0 ? searchResults : inventoryData}
-          pageSize={5}
-          sortable={true}
-          onSort={handleSort}
-          onRowClick={handleRowClick}
-        />
-      )}
-    </div>
+    //  {isLoading ? (
+    //       <p>Loading...</p>
+    //     ) : (
+    //       <DataTable
+    //         columns={columns}
+    //         data={searchResults.length > 0 ? searchResults : inventoryData}
+    //         pageSize={5}
+    //         sortable={true}
+    //         onSort={handleSort}
+    //         onRowClick={handleRowClick}
+    //       />
+    //     )}
+    //   </div>
   );
 };
 

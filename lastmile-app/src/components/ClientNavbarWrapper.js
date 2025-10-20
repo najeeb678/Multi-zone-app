@@ -11,8 +11,7 @@ export default function ClientNavbarWrapper() {
       onLogoClick={() => (window.location.href = "/")}
       menuItems={[
         { label: "🏠 Host App", onClick: () => (window.location.href = "/") },
-        { label: "🚚 Last-Mile App", onClick: () => (window.location.href = "/v2") },
-        { label: "📦 Fulfillment", onClick: () => (window.location.href = "/inventory") },
+        { label: "🚚 Fulfillment App", onClick: () => (window.location.href = "/v3") },
         { label: "🚪 Logout", onClick: globalLogout },
       ]}
     />

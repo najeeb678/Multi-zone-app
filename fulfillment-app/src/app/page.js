@@ -68,6 +68,22 @@ export default function Page() {
           >
             {"Inventory Page"}
           </button>
+          <button
+            onClick={() => (window.location.href = "v3/stocks")}
+            disabled={loading.clients || loading.orders}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#0070f3",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: loading.clients || loading.orders ? "wait" : "pointer",
+              marginBottom: "20px",
+              marginRight: "10px",
+            }}
+          >
+            {"Stocks Page"}
+          </button>
 
           <button
             onClick={loadClients}
