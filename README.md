@@ -130,6 +130,7 @@ For development, you can also access zones directly:
 2. **Independent Deployments**: Each zone can be developed and deployed separately
 3. **Soft/Hard Navigation**: Proper navigation handling between zones
 4. **Asset Isolation**: Each zone has its own static asset prefix to avoid conflicts
+5. **Styled Components with SSR**: Optimized styled-components setup with FOUC prevention (see [fouc-solution.md](./fouc-solution.md))
 
 ## Environment Variables
 

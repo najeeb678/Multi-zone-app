@@ -8,6 +8,7 @@ import { ServerStyleSheet, StyleSheetManager, createGlobalStyle } from "styled-c
 const GlobalHideStyle = createGlobalStyle`
   html {
     visibility: hidden;
+    opacity: 0;
   }
 `;
 
@@ -15,6 +16,8 @@ const GlobalHideStyle = createGlobalStyle`
 const GlobalShowStyle = createGlobalStyle`
   html {
     visibility: visible;
+    opacity: 1;
+    transition: opacity 0.1s ease;
   }
 `;
 
@@ -32,13 +35,12 @@ export function StyledComponentsRegistry({ children }) {
 
   // When on client, mark styles as ready after hydration is complete
   useEffect(() => {
-    // This setTimeout ensures styles are properly applied before showing content
-    // The small delay helps ensure all styled components are fully processed
-    const timeoutId = setTimeout(() => {
+    // Set styles ready immediately after hydration
+    const timer = setTimeout(() => {
       setStylesReady(true);
-    }, 10);
+    }, 50); // Small delay to ensure styles are processed
 
-    return () => clearTimeout(timeoutId);
+    return () => clearTimeout(timer);
   }, []);
 
   // On client side
@@ -49,8 +51,22 @@ export function StyledComponentsRegistry({ children }) {
         {isStylesReady && <GlobalShowStyle />}
         {children}
 
-        {/* Firefox FOUC hack - dummy script execution right after body */}
+        {/* Firefox FOUC hack - dummy script execution */}
         <script dangerouslySetInnerHTML={{ __html: "// FOUC fix for Firefox" }} />
+
+        {/* Fallback for users with JavaScript disabled */}
+        <noscript>
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
+            html { 
+              visibility: visible !important;
+              opacity: 1 !important;
+            }
+          `,
+            }}
+          />
+        </noscript>
       </>
     );
   }

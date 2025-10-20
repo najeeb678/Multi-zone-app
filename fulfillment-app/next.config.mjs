@@ -7,6 +7,7 @@ const nextConfig = {
     // Enable the SWC styled-components transform for SSR support and better class names
     styledComponents: true,
   },
+
   assetPrefix: "/fulfillment-static",
   basePath: "/v3",
   async rewrites() {
