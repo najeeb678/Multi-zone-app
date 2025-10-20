@@ -4,6 +4,7 @@
   "description": "Multi-Zone Next.js Application",
   "scripts": {
     "dev": "./start-zones.sh",
+    "link": "./setup-links.sh",
     "install-all": "cd host-app && npm install && cd ../lastmile-app && npm install && cd ../fulfillment-app && npm install",
     "build-all": "cd host-app && npm run build && cd ../lastmile-app && npm run build && cd ../fulfillment-app && npm run build",
     "start-all": "cd host-app && npm start & cd ../lastmile-app && npm start & cd ../fulfillment-app && npm start &"
@@ -14,5 +15,8 @@
     "micro-frontends"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "styled-components": "^6.1.19"
+  }
 }

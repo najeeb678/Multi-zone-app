@@ -2,6 +2,7 @@ import OrdersClient from "@/components/Clients/OrdersClient";
 import { ssrAPI } from "@/utils/ssrAPI";
 import { redirect } from "next/navigation";
 import { Navbar } from "app-tship";
+import { globalLogout } from "@/utils/auth";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
@@ -13,7 +14,6 @@ export default async function Page() {
 
     return (
       <>
-        <Navbar menuItems={["Home", "Profile", "Settings", "Logout"]} />
         <OrdersClient clientsData={clients} />
       </>
     );
@@ -25,7 +25,6 @@ export default async function Page() {
 
     return (
       <>
-        <Navbar />
         <OrdersClient clients={[]} />
       </>
     );

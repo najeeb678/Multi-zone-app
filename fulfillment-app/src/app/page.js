@@ -39,7 +39,7 @@ export default function Page() {
           { label: "🏠 Host App", onClick: () => (window.location.href = "/") },
           { label: "🚚 Last-Mile App", onClick: () => (window.location.href = "/v2") },
           { label: "📦 Fulfillment", onClick: () => (window.location.href = "/inventory") },
-          { label: "🔄 Refresh Orders", onClick: loadClients },
+
           { label: "🚪 Logout", onClick: globalLogout },
         ]}
       />
@@ -64,7 +64,40 @@ export default function Page() {
             Testing real API connection through host middleware.
           </p>
         </div>
+        <div className={styles.buttons}>
+          <button
+            onClick={() => (window.location.href = "v3/inventory")}
+            disabled={loading.clients || loading.orders}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#0070f3",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: loading.clients || loading.orders ? "wait" : "pointer",
+              marginBottom: "20px",
+              marginRight: "10px",
+            }}
+          >
+            {"Inventory Page"}
+          </button>
 
+          <button
+            onClick={loadClients}
+            disabled={loading.clients}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#0070f3",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: loading.clients ? "wait" : "pointer",
+              marginBottom: "20px",
+            }}
+          >
+            {loading.clients ? "Loading..." : "🔄 Refresh Clients"}
+          </button>
+        </div>
         {clients.length > 0 ? (
           <div className={styles.clients}>
             {clients.map((client) => (
