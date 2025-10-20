@@ -34,7 +34,7 @@ export default function Page() {
     <>
       <Navbar
         logoText="TShip"
-        onLogoClick={() => router.push("/")}
+        onLogoClick={() => (window.location.href = "/")}
         menuItems={[
           { label: "🏠 Host App", onClick: () => (window.location.href = "/") },
           { label: "🚚 Last-Mile App", onClick: () => (window.location.href = "/v2") },
