@@ -4,16 +4,16 @@ import React, { useState, useEffect } from "react";
 import { useServerInsertedHTML } from "next/navigation";
 import { ServerStyleSheet, StyleSheetManager, createGlobalStyle } from "styled-components";
 
-// Global style to initially hide content until styles are applied
-const GlobalHideStyle = createGlobalStyle`
+// Global style to hide HTML until styles are applied
+const GlobalHide = createGlobalStyle`
   html {
     visibility: hidden;
     opacity: 0;
   }
 `;
 
-// Global style to show content when everything is ready
-const GlobalShowStyle = createGlobalStyle`
+// Global style to reveal HTML smoothly
+const GlobalShow = createGlobalStyle`
   html {
     visibility: visible;
     opacity: 1;
@@ -22,62 +22,37 @@ const GlobalShowStyle = createGlobalStyle`
 `;
 
 export function StyledComponentsRegistry({ children }) {
-  // Create a stylesheet for this render cycle
-  const [styledComponentsStyleSheet] = useState(() => new ServerStyleSheet());
-  const [isStylesReady, setStylesReady] = useState(false);
+  const [sheet] = useState(() => new ServerStyleSheet());
+  const [ready, setReady] = useState(false);
 
-  // Use a higher priority insertion to ensure styles are loaded before content
   useServerInsertedHTML(() => {
-    const styles = styledComponentsStyleSheet.getStyleElement();
-    styledComponentsStyleSheet.instance.clearTag();
+    const styles = sheet.getStyleElement();
+    sheet.instance.clearTag();
     return <>{styles}</>;
   });
 
-  // When on client, mark styles as ready after hydration is complete
   useEffect(() => {
-    // Set styles ready immediately after hydration
-    const timer = setTimeout(() => {
-      setStylesReady(true);
-    }, 50); // Small delay to ensure styles are processed
-
+    // Reveal the content just after hydration
+    const timer = setTimeout(() => setReady(true), 50);
     return () => clearTimeout(timer);
   }, []);
 
-  // On client side
+  // ✅ CLIENT SIDE
   if (typeof window !== "undefined") {
     return (
       <>
-        {!isStylesReady && <GlobalHideStyle />}
-        {isStylesReady && <GlobalShowStyle />}
+        {!ready && <GlobalHide />}
+        {ready && <GlobalShow />}
         {children}
-
-        {/* Firefox FOUC hack - dummy script execution */}
-        <script dangerouslySetInnerHTML={{ __html: "// FOUC fix for Firefox" }} />
-
-        {/* Fallback for users with JavaScript disabled */}
-        <noscript>
-          <style
-            dangerouslySetInnerHTML={{
-              __html: `
-            html { 
-              visibility: visible !important;
-              opacity: 1 !important;
-            }
-          `,
-            }}
-          />
-        </noscript>
       </>
     );
   }
 
-  // On server, wrap with StyleSheetManager to collect styles
+  // ✅ SERVER SIDE
   return (
-    <StyleSheetManager sheet={styledComponentsStyleSheet.instance} enableVendorPrefixes={true}>
-      <>
-        <GlobalHideStyle />
-        {children}
-      </>
+    <StyleSheetManager sheet={sheet.instance}>
+      <GlobalHide />
+      {children}
     </StyleSheetManager>
   );
 }
