@@ -2,7 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import StyledComponentsRegistry from "@/lib/StyledComponentsRegistry";
+import { StyledComponentsRegistry } from "@/lib/StyledComponentsRegistry";
 import ClientNavbarWrapper from "@/components/ClientNavbarWrapper";
 const geistSans = Geist({
   subsets: ["latin"],
