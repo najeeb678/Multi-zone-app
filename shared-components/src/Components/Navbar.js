@@ -46,7 +46,6 @@ const MenuItem = styled.div`
 `;
 
 const Navbar = ({ logoText = "TShip", menuItems = [], onLogoClick, activeItem }) => {
-
   return (
     <NavbarContainer>
       <Logo onClick={onLogoClick}>{logoText}</Logo>

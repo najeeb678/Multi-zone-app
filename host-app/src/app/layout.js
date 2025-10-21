@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "../components/AuthProvider";
 import { StyledComponentsRegistry } from "app-tship";
+import ClientNavbarWrapper from "@/components/ClientNavbarWrapper";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -25,11 +26,9 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body suppressHydrationWarning={true}>
         <AuthProvider>
+          <ClientNavbarWrapper />
           {/* Using the shared registry to ensure consistent styling */}
-          <StyledComponentsRegistry>
-            {/* <ClientNavbarWrapper /> */}
-            {children}
-          </StyledComponentsRegistry>
+          <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
         </AuthProvider>
       </body>
     </html>
