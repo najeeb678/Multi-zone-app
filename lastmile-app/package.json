@@ -5,11 +5,12 @@
   "scripts": {
     "dev": "next dev --port=5802",
     "production": "next build && npm start --port=5802",
-    "start": "next start",
+    "start": "next start -p 5802",
     "lint": "next lint",
     "build": "next build"
   },
   "dependencies": {
+    "app-tship": "file:../shared-components",
     "axios": "^1.12.2",
     "next": "15.5.4",
     "react": "^19.1.0",

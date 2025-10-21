@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port=5801",
-    "start": "next start",
+   "start": "next start -p 5801",
     "lint": "next lint",
     "build": "next build"
   },
   "dependencies": {
+    "app-tship": "file:../shared-components",
     "axios": "^1.12.2",
     "next": "15.5.4",
     "next-auth": "^4.24.11",
