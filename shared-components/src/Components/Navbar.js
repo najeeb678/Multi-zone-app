@@ -5,8 +5,10 @@ import styled from "styled-components";
 
 // Styled components
 const NavbarContainer = styled.div`
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
   display: flex;
   justify-content: space-between;
