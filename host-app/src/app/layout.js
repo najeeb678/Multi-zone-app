@@ -26,7 +26,10 @@ export default function RootLayout({ children }) {
       <body suppressHydrationWarning={true}>
         <AuthProvider>
           {/* Using the shared registry to ensure consistent styling */}
-          <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+          <StyledComponentsRegistry>
+            {/* <ClientNavbarWrapper /> */}
+            {children}
+          </StyledComponentsRegistry>
         </AuthProvider>
       </body>
     </html>

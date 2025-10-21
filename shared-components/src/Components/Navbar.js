@@ -36,13 +36,17 @@ const MenuItem = styled.div`
   cursor: pointer;
   font-size: 1rem;
   transition: color 0.2s;
+  padding: 0.5rem 0;
+  border-bottom: ${(props) => (props.$isActive ? "2px solid #ba9775" : "none")};
+  font-weight: ${(props) => (props.$isActive ? "bold" : "normal")};
 
   &:hover {
     color: #ba9775;
   }
 `;
 
-const Navbar = ({ logoText = "TShip", menuItems = [], onLogoClick }) => {
+const Navbar = ({ logoText = "TShip", menuItems = [], onLogoClick, activeItem }) => {
+
   return (
     <NavbarContainer>
       <Logo onClick={onLogoClick}>{logoText}</Logo>
@@ -50,7 +54,7 @@ const Navbar = ({ logoText = "TShip", menuItems = [], onLogoClick }) => {
         {menuItems
           .filter((item) => item.onClick) // hides items without click handler
           .map((item, idx) => (
-            <MenuItem key={idx} onClick={item.onClick}>
+            <MenuItem key={idx} onClick={item.onClick} $isActive={item.label === activeItem}>
               {item.label}
             </MenuItem>
           ))}

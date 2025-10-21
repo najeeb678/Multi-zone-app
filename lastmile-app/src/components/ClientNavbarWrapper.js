@@ -3,15 +3,13 @@
 import React from "react";
 import { Navbar } from "app-tship";
 import { globalLogout } from "@/utils/auth";
-import { useRouter } from "next/navigation";
 
 export default function ClientNavbarWrapper() {
-  const router = useRouter();
-  console.log("path :", router.basePath);
   return (
     <Navbar
       logoText="TShip"
       onLogoClick={() => (window.location.href = "/")}
+      activeItem={"🚚 Last-Mile App"}
       menuItems={[
         { label: "🏠 Host App", onClick: () => (window.location.href = "/") },
         { label: "🚚 Last-Mile App", onClick: () => (window.location.href = "/v2") },
